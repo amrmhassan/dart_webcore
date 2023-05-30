@@ -1,12 +1,14 @@
 // ignore_for_file: overridden_fields
 
+import 'dart:async';
+
 import 'package:custom_shelf/http_method.dart';
 import 'package:custom_shelf/request_processor.dart';
 import 'package:custom_shelf/request_response.dart';
 import 'package:custom_shelf/utils/path_checkers.dart';
 
 /// this is the processor function that deals with either the middleware or the handler itself
-typedef Processor = PassedHttpEntity Function(
+typedef Processor = FutureOr<PassedHttpEntity> Function(
   RequestHolder request,
 
   /// this is the arguments passed to the path itself like

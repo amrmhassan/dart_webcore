@@ -11,6 +11,11 @@ class PathCheckers {
     // this will deal with links like that "/users/<user_id>/getInfo" => this is the path template
     //                                     "/users/159875655/getInfo" => this is the path itself
     // this should make sure that the template and the actual path are the same so this RoutingEntity function will be executed on it
-    return askedPath == myPathTemplate && askedMethod == myMethod;
+    myPathTemplate ??= askedPath;
+    myMethod = myMethod == HttpMethods.all ? askedMethod : myMethod;
+
+    bool mine = askedPath == myPathTemplate &&
+        askedMethod.methodString == myMethod.methodString;
+    return mine;
   }
 }
