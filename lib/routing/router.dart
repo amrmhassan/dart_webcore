@@ -55,7 +55,15 @@ class Router implements RequestProcessor {
   /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
   /// this will only be added to handler3 only and won't be added to handler1 nor handler 2
   void insertRouterMiddleware(HttpMethod method, Processor processor) {
-    Middleware middleware = Middleware(null, method, processor);
+    return insertMiddleware(null, method, processor);
+  }
+
+  void insertMiddleware(
+    String? pathTemplate,
+    HttpMethod method,
+    Processor processor,
+  ) {
+    Middleware middleware = Middleware(pathTemplate, method, processor);
     routingEntities.add(middleware);
   }
 
