@@ -37,11 +37,11 @@ abstract class RoutingEntity {
     String askedPath,
     HttpMethod askedMethod,
   ) =>
-      PathCheckers.isMyPath(
-        askedPath: askedPath,
+      PathCheckers(
         askedMethod: askedMethod,
+        askedPath: askedPath,
         routingEntity: this,
-      );
+      ).isMyPath();
 }
 
 /// the handler will return a ResponseHolder

@@ -37,12 +37,16 @@ class RequestHandler {
     if (processors.isNotEmpty) {
       // here just run the onPathNotFound or the default one that will return a not found json obj
       RequestHolder requestHolder = RequestHolder(request);
-      for (var routingEntities in processors) {
+      for (var routingEntity in processors) {
         // here i need to extract the pathArgs from the path itself
-        PassedHttpEntity passedHttpEntity = await routingEntities.processor(
+        PassedHttpEntity passedHttpEntity = await routingEntity.processor(
           requestHolder,
           requestHolder.response,
-          PathCheckers.extractPathData(routingEntities.pathTemplate, path),
+          PathCheckers(
+            askedMethod: method,
+            askedPath: path,
+            routingEntity: routingEntity,
+          ).extractPathData(),
         );
         if (passedHttpEntity is RequestHolder) {
           requestHolder = passedHttpEntity;
