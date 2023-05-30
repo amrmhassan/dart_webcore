@@ -10,6 +10,15 @@ class Router implements RequestProcessor {
 
   /// these are the handlers that will be chosen from to run if the path and the method are fulfilled
 
+  Handler add(Handler handler) {
+    return addHandler(
+      handler.pathTemplate,
+      handler.method,
+      handler.processor,
+      middlewares: handler.middlewares,
+    );
+  }
+
   Handler addHandler(
     String pathTemplate,
     HttpMethod method,

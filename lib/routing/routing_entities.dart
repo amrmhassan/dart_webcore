@@ -49,7 +49,7 @@ abstract class RoutingEntity {
 /// the handler itself can have some middlewares that will be executed before it as a local middlewares
 /// the pathTemplate of a handler can't be null
 class Handler extends RoutingEntity implements RequestProcessor {
-  final List<Middleware> middlewares;
+  final List<Middleware> middlewares = [];
   @override
   final String pathTemplate;
 
@@ -57,8 +57,10 @@ class Handler extends RoutingEntity implements RequestProcessor {
     this.pathTemplate,
     HttpMethod method,
     Processor processor, {
-    this.middlewares = const [],
-  }) : super(pathTemplate, method, processor);
+    List<Middleware> middlewares = const [],
+  }) : super(pathTemplate, method, processor) {
+    this.middlewares.addAll(middlewares);
+  }
 
   /// local middlewares will run only for this handler and won't have any effect on other handlers
   Handler addLocalMiddleware(Processor processor) {
@@ -70,10 +72,22 @@ class Handler extends RoutingEntity implements RequestProcessor {
   @override
   List<RoutingEntity> processors(String path, HttpMethod method) {
     List<RoutingEntity> prs = [];
+    bool handlerAdded = false;
     for (var middleware in middlewares) {
       prs.addAll(middleware.processors(path, method));
     }
-    prs.add(this);
+    bool mine = PathCheckers(
+      askedPath: path,
+      askedMethod: method,
+      routingEntity: this,
+    ).isMyPath();
+    if (mine) {
+      prs.add(this);
+      handlerAdded = true;
+    }
+    if (!handlerAdded) {
+      return [];
+    }
     return prs;
   }
 }
@@ -86,5 +100,15 @@ class Middleware extends RoutingEntity implements RequestProcessor {
   Middleware(super.pathTemplate, super.method, super.processor);
 
   @override
-  List<RoutingEntity> processors(String path, HttpMethod method) => [this];
+  List<RoutingEntity> processors(String path, HttpMethod method) {
+    bool mine = PathCheckers(
+      askedPath: path,
+      askedMethod: method,
+      routingEntity: this,
+    ).isMyPath();
+    if (mine) {
+      return [this];
+    }
+    return [];
+  }
 }

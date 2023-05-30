@@ -23,8 +23,12 @@ class PathCheckers {
     bool allMethod = myMethod == HttpMethods.all;
     myMethod = allMethod ? askedMethod : myMethod;
 
-    // checking if it is mine
+    // checking if the method is mine
+    if (myMethod != askedMethod) {
+      return false;
+    }
 
+    // checking if the path is mine
     List<String> actualLinkParts = askedPath.split('/');
     List<String> templateParts = myPathTemplate.split('/');
     if (actualLinkParts.length != templateParts.length) {
