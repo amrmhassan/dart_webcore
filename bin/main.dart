@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:custom_shelf/cascade.dart';
 import 'package:custom_shelf/http_method.dart';
 import 'package:custom_shelf/pipeline.dart';
 import 'package:custom_shelf/router.dart';
@@ -27,6 +28,7 @@ void main(List<String> arguments) async {
       .addMiddleware('/login', HttpMethods.all,
           (request, response, pathArgs) => response.write('response closed'))
       .addRouter(router);
+  Cascade cascade = Cascade().add(authPipeline);
 
   ServerHolder server = ServerHolder(
     authPipeline,

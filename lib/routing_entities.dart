@@ -40,8 +40,7 @@ abstract class RoutingEntity {
       PathCheckers.isMyPath(
         askedPath: askedPath,
         askedMethod: askedMethod,
-        myPathTemplate: pathTemplate,
-        myMethod: method,
+        routingEntity: this,
       );
 }
 

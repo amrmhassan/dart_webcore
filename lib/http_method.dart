@@ -47,7 +47,7 @@ class HttpMethod {
 
   @override
   bool operator ==(Object other) {
-    return super.hashCode == other.hashCode;
+    return hashCode == other.hashCode;
   }
 }
 

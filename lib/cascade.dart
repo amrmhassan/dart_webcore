@@ -6,8 +6,9 @@ import 'package:custom_shelf/routing_entities.dart';
 class Cascade implements RequestProcessor {
   List<Pipeline> pipeLines = [];
 
-  void add(Pipeline pipeline) {
+  Cascade add(Pipeline pipeline) {
     pipeLines.add(pipeline);
+    return this;
   }
 
   @override
