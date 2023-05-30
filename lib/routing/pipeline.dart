@@ -54,7 +54,7 @@ class Pipeline implements RequestProcessor {
       } else if (requestProcessor is Router) {
         List<RoutingEntity> routerProcessors =
             requestProcessor.processors(path, method);
-        if (requestProcessors.isNotEmpty) {
+        if (routerProcessors.isNotEmpty) {
           doHaveHandler = true;
 
           // here i will break after adding all processors to the list
