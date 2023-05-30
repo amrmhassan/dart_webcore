@@ -5,43 +5,45 @@ import 'package:custom_shelf/http_method.dart';
 import 'package:custom_shelf/request_processor.dart';
 import 'package:custom_shelf/request_response.dart';
 import 'package:custom_shelf/routing_entities.dart';
+import 'package:custom_shelf/utils/path_checkers.dart';
 
 /// this is the class where choosing the right processors for incoming request runs
 class RequestHandler {
-  final RequestProcessor requestProcessor;
-  final Processor? onPathNotFound;
+  final RequestProcessor _requestProcessor;
+  final Processor? _onPathNotFoundParam;
   final List<Middleware> _globalMiddlewares;
 
   RequestHandler(
-    this.requestProcessor,
+    this._requestProcessor,
     this._globalMiddlewares, {
-    this.onPathNotFound,
-  });
+    Processor? onPathNotFound,
+  }) : _onPathNotFoundParam = onPathNotFound;
 
   void handler(HttpRequest request) async {
-    var responseHolder = await getPassedEntity(request);
+    var responseHolder = await _getPassedEntity(request);
     await responseHolder.close();
   }
 
-  FutureOr<ResponseHolder> getPassedEntity(HttpRequest request) async {
+  FutureOr<ResponseHolder> _getPassedEntity(HttpRequest request) async {
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
     HttpMethod method = HttpMethod.fromString(request.method);
     var matchedGlobalMiddlewares = _getMatchedGlobalMiddlewares(path, method);
     var processors = [
       ...matchedGlobalMiddlewares,
-      ...requestProcessor.processors(path, method),
+      ..._requestProcessor.processors(path, method),
     ];
 
     if (processors.isNotEmpty) {
       // here just run the onPathNotFound or the default one that will return a not found json obj
       RequestHolder requestHolder = RequestHolder(request);
-      for (var processor in processors) {
+      for (var routingEntities in processors) {
         // here i need to extract the pathArgs from the path itself
-        PassedHttpEntity passedHttpEntity = await processor(
-            requestHolder, requestHolder.response, {
-          'pathArgs': 'add the code for extracting path args from the string'
-        });
+        PassedHttpEntity passedHttpEntity = await routingEntities.processor(
+          requestHolder,
+          requestHolder.response,
+          PathCheckers.extractPathData(routingEntities.pathTemplate, path),
+        );
         if (passedHttpEntity is RequestHolder) {
           requestHolder = passedHttpEntity;
         } else if (passedHttpEntity is ResponseHolder) {
@@ -57,23 +59,23 @@ class RequestHandler {
     return finalResponseHolder;
   }
 
-  List<Processor> _getMatchedGlobalMiddlewares(
+  List<RoutingEntity> _getMatchedGlobalMiddlewares(
     String path,
     HttpMethod method,
   ) {
-    List<Processor> prs = [];
+    List<RoutingEntity> prs = [];
     for (var middleware in _globalMiddlewares) {
       bool mine = middleware.isMyPath(path, method);
       if (mine) {
-        prs.add(middleware.processor);
+        prs.add(middleware);
       }
     }
     return prs;
   }
 
   Future<ResponseHolder> _onPathNotFound(HttpRequest request) async {
-    if (onPathNotFound != null) {
-      var res = await onPathNotFound!(
+    if (_onPathNotFoundParam != null) {
+      var res = await _onPathNotFoundParam!(
           RequestHolder(request),
           ResponseHolder(
             request.response,

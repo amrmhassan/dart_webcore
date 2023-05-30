@@ -67,12 +67,12 @@ class Handler extends RoutingEntity implements RequestProcessor {
   }
 
   @override
-  List<Processor> processors(String path, HttpMethod method) {
-    List<Processor> prs = [];
+  List<RoutingEntity> processors(String path, HttpMethod method) {
+    List<RoutingEntity> prs = [];
     for (var middleware in middlewares) {
       prs.addAll(middleware.processors(path, method));
     }
-    prs.add(processor);
+    prs.add(this);
     return prs;
   }
 }
@@ -85,5 +85,5 @@ class Middleware extends RoutingEntity implements RequestProcessor {
   Middleware(super.pathTemplate, super.method, super.processor);
 
   @override
-  List<Processor> processors(String path, HttpMethod method) => [processor];
+  List<RoutingEntity> processors(String path, HttpMethod method) => [this];
 }

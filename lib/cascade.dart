@@ -12,10 +12,11 @@ class Cascade implements RequestProcessor {
   }
 
   @override
-  List<Processor> processors(String path, HttpMethod method) {
-    List<Processor> prs = [];
+  List<RoutingEntity> processors(String path, HttpMethod method) {
+    List<RoutingEntity> prs = [];
     for (var pipeLine in pipeLines) {
-      List<Processor> pipeLineProcessors = pipeLine.processors(path, method);
+      List<RoutingEntity> pipeLineProcessors =
+          pipeLine.processors(path, method);
       if (pipeLineProcessors.isNotEmpty) {
         prs.addAll(pipeLineProcessors);
       }

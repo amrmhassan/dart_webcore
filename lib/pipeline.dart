@@ -34,8 +34,8 @@ class Pipeline implements RequestProcessor {
   }
 
   @override
-  List<Processor> processors(String path, HttpMethod method) {
-    List<Processor> prs = [];
+  List<RoutingEntity> processors(String path, HttpMethod method) {
+    List<RoutingEntity> prs = [];
     bool doHaveHandler = false;
     for (var requestProcessor in requestProcessors) {
       if (requestProcessor is Handler) {
@@ -51,7 +51,7 @@ class Pipeline implements RequestProcessor {
           prs.addAll(requestProcessor.processors(path, method));
         }
       } else if (requestProcessor is Router) {
-        List<Processor> routerProcessors =
+        List<RoutingEntity> routerProcessors =
             requestProcessor.processors(path, method);
         if (requestProcessors.isNotEmpty) {
           doHaveHandler = true;

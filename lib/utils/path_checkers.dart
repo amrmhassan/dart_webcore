@@ -22,4 +22,11 @@ class PathCheckers {
         askedMethod.methodString == myMethod.methodString;
     return mine;
   }
+
+  static Map<String, dynamic> extractPathData(
+    String? pathTemplate,
+    String path,
+  ) {
+    return {};
+  }
 }

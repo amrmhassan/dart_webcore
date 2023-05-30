@@ -50,12 +50,12 @@ class Router implements RequestProcessor {
   }
 
   @override
-  List<Processor> processors(String path, HttpMethod method) {
+  List<RoutingEntity> processors(String path, HttpMethod method) {
     if (_handlersNumber == 0) {
       throw Exception('router must have at least one handler');
     }
 
-    List<Processor> prs = [];
+    List<RoutingEntity> prs = [];
     // this is to check if at least one handler is satisfied or not
     // if not then this router isn't the right router so i won't return anything from here at all
     bool doHaveHandler = false;
