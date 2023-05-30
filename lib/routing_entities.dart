@@ -10,6 +10,7 @@ import 'package:custom_shelf/utils/path_checkers.dart';
 /// this is the processor function that deals with either the middleware or the handler itself
 typedef Processor = FutureOr<PassedHttpEntity> Function(
   RequestHolder request,
+  ResponseHolder response,
 
   /// this is the arguments passed to the path itself like
   /// /users/<user_id>/getInfo => path template

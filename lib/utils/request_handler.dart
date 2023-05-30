@@ -31,7 +31,8 @@ class RequestHandler {
       RequestHolder requestHolder = RequestHolder(request);
       for (var processor in processors) {
         // here i need to extract the pathArgs from the path itself
-        PassedHttpEntity passedHttpEntity = await processor(requestHolder, {
+        PassedHttpEntity passedHttpEntity = await processor(
+            requestHolder, requestHolder.response, {
           'pathArgs': 'add the code for extracting path args from the string'
         });
         if (passedHttpEntity is RequestHolder) {
@@ -51,7 +52,12 @@ class RequestHandler {
 
   Future<ResponseHolder> _onPathNotFound(HttpRequest request) async {
     if (onPathNotFound != null) {
-      var res = await onPathNotFound!(RequestHolder(request), {});
+      var res = await onPathNotFound!(
+          RequestHolder(request),
+          ResponseHolder(
+            request.response,
+          ),
+          {});
       if (res is ResponseHolder) {
         return res;
       }

@@ -7,18 +7,23 @@ import 'package:custom_shelf/server/server.dart';
 void main(List<String> arguments) async {
   Router router = Router()
     ..insertRouterMiddleware(
-      HttpMethods.all,
-      (request, pathArgs) {
+      HttpMethods.geT,
+      (request, response, pathArgs) {
         print(request.request.uri.path);
         return request;
       },
     )
-    ..get('/login', (request, pathArgs) {
-      return request.response.write('hello world').close();
-    });
+    ..get(
+      '/login',
+      (request, response, pathArgs) => response.write('get login'),
+    )
+    ..post(
+      '/login',
+      (request, response, pathArgs) => response.write('post login'),
+    );
   ServerHolder server = ServerHolder(
     router,
-    onPathNotFound: (request, pathArgs) {
+    onPathNotFound: (request, response, pathArgs) {
       return request.response.write('this path not found').close();
     },
   );
