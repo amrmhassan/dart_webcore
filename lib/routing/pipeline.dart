@@ -1,7 +1,8 @@
-import 'package:custom_shelf/http_method.dart';
-import 'package:custom_shelf/request_processor.dart';
-import 'package:custom_shelf/router.dart';
-import 'package:custom_shelf/routing_entities.dart';
+import 'package:custom_shelf/routing/request_processor.dart';
+import 'package:custom_shelf/routing/router.dart';
+import 'package:custom_shelf/routing/routing_entities.dart';
+
+import 'http_method.dart';
 
 class Pipeline implements RequestProcessor {
   final List<RequestProcessor> requestProcessors = [];

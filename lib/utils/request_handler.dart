@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:custom_shelf/http_method.dart';
-import 'package:custom_shelf/request_processor.dart';
-import 'package:custom_shelf/request_response.dart';
-import 'package:custom_shelf/routing_entities.dart';
 import 'package:custom_shelf/utils/path_checkers.dart';
+
+import '../routing/http_method.dart';
+import '../routing/request_processor.dart';
+import '../routing/request_response.dart';
+import '../routing/routing_entities.dart';
 
 /// this is the class where choosing the right processors for incoming request runs
 class RequestHandler {
@@ -37,6 +38,7 @@ class RequestHandler {
     if (processors.isNotEmpty) {
       // here just run the onPathNotFound or the default one that will return a not found json obj
       RequestHolder requestHolder = RequestHolder(request);
+
       for (var routingEntity in processors) {
         // here i need to extract the pathArgs from the path itself
         PassedHttpEntity passedHttpEntity = await routingEntity.processor(

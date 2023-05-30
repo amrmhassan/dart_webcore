@@ -1,14 +1,16 @@
 import 'dart:io';
 
-import 'package:custom_shelf/http_method.dart';
-import 'package:custom_shelf/request_processor.dart';
-import 'package:custom_shelf/routing_entities.dart';
 import 'package:custom_shelf/utils/request_handler.dart';
+
+import '../routing/http_method.dart';
+import '../routing/request_processor.dart';
+import '../routing/routing_entities.dart';
 
 class ServerHolder {
   final List<HttpServer> _servers = [];
   final RequestProcessor requestProcessor;
   final Function()? onRequestDone;
+
   final Function()? onRequestError;
   final bool? cancelOnError;
   final Processor? onPathNotFound;

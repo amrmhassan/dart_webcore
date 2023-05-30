@@ -1,6 +1,7 @@
-import 'package:custom_shelf/http_method.dart';
-import 'package:custom_shelf/request_processor.dart';
-import 'package:custom_shelf/routing_entities.dart';
+import 'package:custom_shelf/routing/request_processor.dart';
+import 'package:custom_shelf/routing/routing_entities.dart';
+
+import 'http_method.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
 class Router implements RequestProcessor {

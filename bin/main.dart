@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:custom_shelf/router.dart';
+import 'package:custom_shelf/routing/router.dart';
 import 'package:custom_shelf/server/server.dart';
 
 void main(List<String> arguments) async {

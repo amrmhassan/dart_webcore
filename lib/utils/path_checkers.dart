@@ -1,6 +1,5 @@
-import 'package:custom_shelf/routing_entities.dart';
-
-import '../http_method.dart';
+import '../routing/http_method.dart';
+import '../routing/routing_entities.dart';
 
 class PathCheckers {
   final String askedPath;
