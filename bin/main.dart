@@ -36,7 +36,11 @@ void main(List<String> arguments) async {
       (request, response, pathArgs) => response.write('opaque'));
 
   Cascade cascade = Cascade().add(pipeline).add(pipeline2);
-  var serverHolder = ServerHolder(cascade);
+  var serverHolder =
+      ServerHolder(cascade).addGlobalMiddleware((request, response, pathArgs) {
+    request.context['receivedAt'] = DateTime.now();
+    return request;
+  });
   var server = await serverHolder.bind(InternetAddress.anyIPv4, 3000);
   print('listening on http://127.0.0.1:${server.port}');
 }
