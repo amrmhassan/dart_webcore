@@ -10,9 +10,11 @@ import 'package:custom_shelf/routing_entities.dart';
 class RequestHandler {
   final RequestProcessor requestProcessor;
   final Processor? onPathNotFound;
+  final List<Middleware> _globalMiddlewares;
 
   RequestHandler(
-    this.requestProcessor, {
+    this.requestProcessor,
+    this._globalMiddlewares, {
     this.onPathNotFound,
   });
 
@@ -25,7 +27,12 @@ class RequestHandler {
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
     HttpMethod method = HttpMethod.fromString(request.method);
-    var processors = requestProcessor.processors(path, method);
+    var matchedGlobalMiddlewares = _getMatchedGlobalMiddlewares(path, method);
+    var processors = [
+      ...matchedGlobalMiddlewares,
+      ...requestProcessor.processors(path, method),
+    ];
+
     if (processors.isNotEmpty) {
       // here just run the onPathNotFound or the default one that will return a not found json obj
       RequestHolder requestHolder = RequestHolder(request);
@@ -48,6 +55,20 @@ class RequestHandler {
       return _onPathNotFound(request);
     }
     return finalResponseHolder;
+  }
+
+  List<Processor> _getMatchedGlobalMiddlewares(
+    String path,
+    HttpMethod method,
+  ) {
+    List<Processor> prs = [];
+    for (var middleware in _globalMiddlewares) {
+      bool mine = middleware.isMyPath(path, method);
+      if (mine) {
+        prs.add(middleware.processor);
+      }
+    }
+    return prs;
   }
 
   Future<ResponseHolder> _onPathNotFound(HttpRequest request) async {

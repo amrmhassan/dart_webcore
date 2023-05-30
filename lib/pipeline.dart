@@ -11,11 +11,21 @@ class Pipeline implements RequestProcessor {
     return this;
   }
 
-  Pipeline addMiddleware(Middleware middleware) {
+  Pipeline addMiddleware(
+    String pathTemplate,
+    HttpMethod method,
+    Processor processor,
+  ) {
+    Middleware middleware = Middleware(pathTemplate, method, processor);
     return addRequestProcessor(middleware);
   }
 
-  Pipeline addHandler(Handler handler) {
+  Pipeline addHandler(
+    String pathTemplate,
+    HttpMethod method,
+    Processor processor,
+  ) {
+    Handler handler = Handler(pathTemplate, method, processor);
     return addRequestProcessor(handler);
   }
 

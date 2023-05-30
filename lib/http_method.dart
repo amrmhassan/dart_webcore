@@ -1,42 +1,45 @@
 // ignore_for_file: constant_identifier_names
 
 class HttpMethods {
-  static HttpMethod geT = GETMethod();
-  static HttpMethod post = POSTMethod();
-  static HttpMethod put = PUTMethod();
-  static HttpMethod delete = DELETEMethod();
-  static HttpMethod all = ALLMethod();
-  static HttpMethod head = HEADMethod();
-  static HttpMethod connect = CONNECTMethod();
-  static HttpMethod options = OPTIONSMethod();
-  static HttpMethod trace = TRACEMethod();
-  static HttpMethod patch = PATCHMethod();
+  static const HttpMethod geT = _GetMethod();
+  static const HttpMethod post = _PostMethod();
+  static const HttpMethod put = _PutMethod();
+  static const HttpMethod delete = _DeleteMethod();
+  static const HttpMethod head = _HeadMethod();
+  static const HttpMethod connect = _CONNECTMethod();
+  static const HttpMethod options = _OptionsMethod();
+  static const HttpMethod trace = _TraceMethod();
+  static const HttpMethod patch = _PatchMethod();
+  static const HttpMethod all = _All();
 }
 
-abstract class HttpMethod {
-  late String? methodString;
+class HttpMethod {
+  final String? methodString;
+  const HttpMethod(this.methodString);
   static HttpMethod fromString(String? m) {
     String? method = m?.toLowerCase();
-    if (method == GETMethod().methodString) {
-      return GETMethod();
-    } else if (method == POSTMethod().methodString) {
-      return POSTMethod();
-    } else if (method == PUTMethod().methodString) {
-      return PUTMethod();
-    } else if (method == DELETEMethod().methodString) {
-      return DELETEMethod();
-    } else if (method == HEADMethod().methodString) {
-      return HEADMethod();
-    } else if (method == CONNECTMethod().methodString) {
-      return CONNECTMethod();
-    } else if (method == OPTIONSMethod().methodString) {
-      return OPTIONSMethod();
-    } else if (method == TRACEMethod().methodString) {
-      return TRACEMethod();
-    } else if (method == PATCHMethod().methodString) {
-      return PATCHMethod();
+    if (method == _GetMethod().methodString) {
+      return _GetMethod();
+    } else if (method == _PostMethod().methodString) {
+      return _PostMethod();
+    } else if (method == _PutMethod().methodString) {
+      return _PutMethod();
+    } else if (method == _DeleteMethod().methodString) {
+      return _DeleteMethod();
+    } else if (method == _HeadMethod().methodString) {
+      return _HeadMethod();
+    } else if (method == _CONNECTMethod().methodString) {
+      return _CONNECTMethod();
+    } else if (method == _OptionsMethod().methodString) {
+      return _OptionsMethod();
+    } else if (method == _TraceMethod().methodString) {
+      return _TraceMethod();
+    } else if (method == _PatchMethod().methodString) {
+      return _PatchMethod();
+    } else if (method == _All().methodString) {
+      return _All();
     }
-    return ALLMethod();
+    return _UnknownMethod();
   }
 
   @override
@@ -48,52 +51,46 @@ abstract class HttpMethod {
   }
 }
 
-class GETMethod implements HttpMethod {
-  @override
-  String? methodString = 'get';
+class _GetMethod extends HttpMethod {
+  const _GetMethod() : super('get');
 }
 
-class POSTMethod implements HttpMethod {
-  @override
-  String? methodString = 'post';
+class _PostMethod extends HttpMethod {
+  const _PostMethod() : super('post');
 }
 
-class PUTMethod implements HttpMethod {
-  @override
-  String? methodString = 'put';
+class _PutMethod extends HttpMethod {
+  const _PutMethod() : super('put');
 }
 
-class DELETEMethod implements HttpMethod {
-  @override
-  String? methodString = 'delete';
+class _DeleteMethod extends HttpMethod {
+  const _DeleteMethod() : super('delete');
 }
 
-class HEADMethod implements HttpMethod {
-  @override
-  String? methodString = 'head';
+class _HeadMethod extends HttpMethod {
+  const _HeadMethod() : super('head');
 }
 
-class CONNECTMethod implements HttpMethod {
-  @override
-  String? methodString = 'connect';
+class _CONNECTMethod extends HttpMethod {
+  const _CONNECTMethod() : super('connect');
 }
 
-class OPTIONSMethod implements HttpMethod {
-  @override
-  String? methodString = 'options';
+class _OptionsMethod extends HttpMethod {
+  const _OptionsMethod() : super('options');
 }
 
-class TRACEMethod implements HttpMethod {
-  @override
-  String? methodString = 'trace';
+class _TraceMethod extends HttpMethod {
+  const _TraceMethod() : super('trace');
 }
 
-class PATCHMethod implements HttpMethod {
-  @override
-  String? methodString = 'patch';
+class _PatchMethod extends HttpMethod {
+  const _PatchMethod() : super('patch');
 }
 
-class ALLMethod implements HttpMethod {
-  @override
-  String? methodString;
+class _All extends HttpMethod {
+  const _All() : super('all');
+}
+
+class _UnknownMethod extends HttpMethod {
+  const _UnknownMethod() : super(null);
 }

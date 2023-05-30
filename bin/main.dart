@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:custom_shelf/http_method.dart';
+import 'package:custom_shelf/pipeline.dart';
 import 'package:custom_shelf/router.dart';
+import 'package:custom_shelf/routing_entities.dart';
 import 'package:custom_shelf/server/server.dart';
 
 void main(List<String> arguments) async {
@@ -18,15 +20,21 @@ void main(List<String> arguments) async {
       (request, response, pathArgs) => response.write('get login'),
     )
     ..post(
-      '/login',
-      (request, response, pathArgs) => response.write('post login'),
+      '/register',
+      (request, response, pathArgs) => response.write('post register'),
     );
+  Pipeline authPipeline = Pipeline()
+      .addMiddleware('/login', HttpMethods.all,
+          (request, response, pathArgs) => response.write('response closed'))
+      .addRouter(router);
+
   ServerHolder server = ServerHolder(
-    router,
+    authPipeline,
     onPathNotFound: (request, response, pathArgs) {
       return request.response.write('this path not found').close();
     },
   );
+
   var firstServer = await server.bind(InternetAddress.anyIPv4, 3000);
   print('server listening on ${firstServer.port}');
 }

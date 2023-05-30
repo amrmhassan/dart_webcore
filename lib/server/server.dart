@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:custom_shelf/http_method.dart';
 import 'package:custom_shelf/request_processor.dart';
 import 'package:custom_shelf/routing_entities.dart';
 import 'package:custom_shelf/utils/request_handler.dart';
@@ -11,6 +12,7 @@ class ServerHolder {
   final Function()? onRequestError;
   final bool? cancelOnError;
   final Processor? onPathNotFound;
+  final List<Middleware> _globalMiddlewares = [];
 
   ServerHolder(
     this.requestProcessor, {
@@ -24,6 +26,7 @@ class ServerHolder {
     //! here use the processors getter and run on the request listener
     RequestHandler handler = RequestHandler(
       requestProcessor,
+      _globalMiddlewares,
       onPathNotFound: onPathNotFound,
     );
     server.listen(
@@ -88,5 +91,16 @@ class ServerHolder {
         print('can\'t close server on port ${server.port}');
       }
     }
+  }
+
+  ServerHolder addGlobalMiddleware(
+    Processor processor, {
+    String? pathTemplate,
+    HttpMethod method = HttpMethods.all,
+  }) {
+    Middleware middleware = Middleware(pathTemplate, method, processor);
+    _globalMiddlewares.add(middleware);
+
+    return this;
   }
 }
