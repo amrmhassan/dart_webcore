@@ -1,48 +1,68 @@
 import 'dart:io';
 
+import 'package:custom_shelf/serving_folder/serving_result.dart';
+
 // for example the user will ask the following http://domain.com/endpoint/folder_alias/actual-file.html
 // or http://domain.com/endpoint/folder_alias/images/image.png
 
 class FileServing {
-  final List<FolderHost> folders;
-
-  /// if true the user can view the whole content of a sub folder
-  /// /folder_alias/sub-folder  , this will return the whole sub-children of that sub-folder
-  /// if false this will return null, so the user can only ask for a file either it was direct child of the folder_alias or a sub file
-  final bool allowServingSubFolders;
+  final List<FolderHost> _folders;
+  final bool _allowServingSubFolders;
+  final bool _allowViewingEntityPath;
 
   const FileServing(
-    this.folders, {
-    this.allowServingSubFolders = false,
-  });
+    this._folders, {
+    bool allowServingSubFolders = false,
 
-  /// this will return either a file or a directory or null if there were no file nor a folder
-  /// the path must be at the formula /(folder_alias)/(request_file.extension) or any other format that starts with the folder_alias then the path of the file or the sub folder
-  StorageEntity? getEntityPath(String path) {
+    /// if true the user can view the whole content of a sub folder
+    /// /folder_alias/sub-folder  , this will return the whole sub-children of that sub-folder
+    /// if false this will return null, so the user can only ask for a file either it was direct child of the folder_alias or a sub file
+    bool allowViewingEntityPath = false,
+  })  : _allowServingSubFolders = allowServingSubFolders,
+        _allowViewingEntityPath = allowViewingEntityPath
+  //
+  ;
+
+  StorageEntity? _getEntityPath(String path) {
     if (path.contains('//')) return null;
     String parsedPath =
         path.startsWith('/') ? path.replaceFirst('/', '') : path;
 
     List<String> pathParts = parsedPath.split('/');
     String folderAlias = pathParts.first;
-    String? folderPath = folders
+    String? folderPath = _folders
         .cast()
         .firstWhere(
           (element) => element.alias == folderAlias,
           orElse: () => null,
         )
-        .path;
+        ?.path;
     if (folderPath == null) {
       return null;
     }
-    String entityPath = parsedPath + pathParts.sublist(1).join('/');
+    String entityPath = folderPath + pathParts.sublist(1).join('/');
     File file = File(entityPath);
     if (file.existsSync()) {
       return StorageEntity(entityPath, StorageEntityType.file);
     }
     Directory directory = Directory(entityPath);
-    if (directory.existsSync()) {
+    if (directory.existsSync() && _allowServingSubFolders) {
       return StorageEntity(entityPath, StorageEntityType.folder);
+    }
+    return null;
+  }
+
+  /// this will return either a file or a directory or null if there were no file nor a folder
+  /// the path must be at the formula /(folder_alias)/(request_file.extension) or any other format that starts with the folder_alias then the path of the file or the sub folder
+  ServingResult? serveResult(String path) {
+    StorageEntity? entity = _getEntityPath(path);
+    if (entity == null) {
+      return null;
+    }
+    if (entity.type == StorageEntityType.folder) {
+      return FolderResult(entity.path, allowSendPath: _allowViewingEntityPath);
+    } else if (entity.type == StorageEntityType.file) {
+      return FileResult(entity.path);
     }
     return null;
   }
@@ -75,18 +95,23 @@ class FolderHost {
   }
 }
 
-bool isAlphaNumeric(String str) {
-  final pattern = RegExp(r'^[a-zA-Z0-9]+$');
-  return pattern.hasMatch(str);
-}
-
 class StorageEntity {
   final StorageEntityType type;
   final String path;
   const StorageEntity(this.path, this.type);
+
+  @override
+  String toString() {
+    return 'path: $path \ntype: ${type.name}';
+  }
 }
 
 enum StorageEntityType {
   file,
   folder,
+}
+
+bool isAlphaNumeric(String str) {
+  final pattern = RegExp(r'^[a-zA-Z0-9]+$');
+  return pattern.hasMatch(str);
 }

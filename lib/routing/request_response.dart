@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:custom_shelf/serving_folder/serving_result.dart';
 import 'package:custom_shelf/utils/request_decoder.dart';
 import 'dart:convert' as convert;
 
 import 'package:custom_shelf/utils/response_utils.dart';
+
+import '../serving_folder/files_serving.dart';
 
 /// this will be the entity that will be passed through the app routing entities
 abstract class PassedHttpEntity {}
@@ -29,7 +32,10 @@ class ResponseHolder implements PassedHttpEntity {
     return this;
   }
 
-  ResponseHolder write(Object? object) {
+  ResponseHolder write(Object? object, {int? code}) {
+    if (code != null) {
+      response.statusCode = code;
+    }
     response.write(object);
     return this;
   }
@@ -40,7 +46,7 @@ class ResponseHolder implements PassedHttpEntity {
     return this;
   }
 
-  ResponseHolder writeJson(Map<String, dynamic> obj) {
+  ResponseHolder writeJson(dynamic obj) {
     response.headers.contentType = ContentType.json;
     return write(convert.json.encode(obj));
   }
@@ -95,7 +101,38 @@ class ResponseHolder implements PassedHttpEntity {
   // late String reasonPhrase = response.reasonPhrase;
   // late int statusCode = response.statusCode;
 
-  void test() {}
+  FutureOr<ResponseHolder> serverFolder(
+    List<FolderHost> folders,
+
+    /// this will be on the format alias/path-to-request-entity-file-or-folder
+    String requestedEntityPath, {
+    bool allowServingSubFolders = false,
+
+    /// if true the user can view the whole content of a sub folder
+    /// /folder_alias/sub-folder  , this will return the whole sub-children of that sub-folder
+    /// if false this will return null, so the user can only ask for a file either it was direct child of the folder_alias or a sub file
+    bool allowViewingEntityPath = false,
+  }) {
+    FileServing fileServing = FileServing(
+      folders,
+      allowServingSubFolders: allowServingSubFolders,
+      allowViewingEntityPath: allowViewingEntityPath,
+    );
+
+    var result = fileServing.serveResult(requestedEntityPath);
+    if (result is FolderResult) {
+      var res = result.result().map((e) => e.toJSON()).toList();
+
+      return writeJson(res);
+    } else if (result is FileResult) {
+      return writeFile(result.result());
+    }
+
+    return write(
+      'file or folder not found',
+      code: HttpStatus.notFound,
+    );
+  }
 }
 
 class RequestHolder implements PassedHttpEntity {

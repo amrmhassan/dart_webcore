@@ -25,6 +25,10 @@ class ServerHolder {
   });
 
   HttpServer _handlerRequest(HttpServer server) {
+    String address = server.address == InternetAddress.anyIPv4
+        ? '127.0.0.1'
+        : server.address.address;
+    print('server listening on http://$address:${server.port}');
     //! here use the processors getter and run on the request listener
     RequestHandler handler = RequestHandler(
       requestProcessor,
