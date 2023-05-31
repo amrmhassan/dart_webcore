@@ -164,7 +164,7 @@ class ResponseUtils {
 
     var saveDir = Directory(saveDirPath);
     if (!saveDir.existsSync()) {
-      saveDir.createSync();
+      saveDir.createSync(recursive: true);
     }
 
     var savePath = path.join(saveDir.path, filename);

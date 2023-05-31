@@ -67,7 +67,15 @@ class ResponseHolder implements PassedHttpEntity {
     return this;
   }
 
-  Future<String> receiveFile(String saveFolderPath) async {
+  Future<String> receiveFile(
+    /// the folder for saving the reveived file
+    String saveFolderPath, {
+    /// if null all file types are allowed
+    List<String>? allowedTypes,
+
+    /// if null there will be no size limit
+    int? maxAllowedSize,
+  }) async {
     return _responseUtils.receiveFile(request, saveFolderPath);
   }
 
