@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:custom_shelf/routing/cascade.dart';
 import 'package:custom_shelf/routing/http_method.dart';
@@ -8,6 +7,10 @@ import 'package:custom_shelf/routing/router.dart';
 import 'package:custom_shelf/routing/routing_entities.dart';
 import 'package:custom_shelf/server/server.dart';
 
+//! add headers and some other famous props to the request holder and readAsString, readAsJson, readAsBuffer and these kind of stuff
+//! add some more functionality to the response holder like json, and many other things
+//! add the concept of trailerWare the opposite of middleware
+//! add the ability for each middleware to modify the context and add some data to it like time taken in this middleware and these kind of stuff, or just add it to a new thing called middlewareData object instead of context, and make it optional to record these data or not by the server settings
 void main(List<String> arguments) async {
   Handler handler = Handler(
       '/login',
