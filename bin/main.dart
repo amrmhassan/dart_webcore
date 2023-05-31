@@ -10,8 +10,9 @@ import 'package:custom_shelf/server/server.dart';
 //! add the ability for each middleware to modify the context and add some data to it like time taken in this middleware and these kind of stuff, or just add it to a new thing called middlewareData object instead of context, and make it optional to record these data or not by the server settings
 void main(List<String> arguments) async {
   Handler handler =
-      Handler('/', HttpMethods.all, (request, response, pathArgs) async {
-    return response..writeFile('./bin/video.mp4');
+      Handler('/', HttpMethods.post, (request, response, pathArgs) async {
+    String filePath = await response.receiveFile('./bin/data/');
+    return response.write(filePath);
   });
 
   var serverHolder = ServerHolder(handler);

@@ -67,6 +67,10 @@ class ResponseHolder implements PassedHttpEntity {
     return this;
   }
 
+  Future<String> receiveFile(String saveFolderPath) async {
+    return _responseUtils.receiveFile(request, saveFolderPath);
+  }
+
   Future<ResponseHolder> addStream(Stream<List<int>> stream) async {
     await response.addStream(stream);
     return this;
