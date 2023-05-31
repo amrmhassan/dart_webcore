@@ -82,17 +82,13 @@ class RequestHandler {
   Future<ResponseHolder> _onPathNotFound(HttpRequest request) async {
     if (_onPathNotFoundParam != null) {
       var res = await _onPathNotFoundParam!(
-          RequestHolder(request),
-          ResponseHolder(
-            request.response,
-          ),
-          {});
+          RequestHolder(request), ResponseHolder(request), {});
       if (res is ResponseHolder) {
         return res;
       }
     }
     // here handle the onPath not found
-    ResponseHolder responseHolder = ResponseHolder(request.response);
+    ResponseHolder responseHolder = ResponseHolder(request);
 
     await responseHolder.write('path not found').close();
     return responseHolder;

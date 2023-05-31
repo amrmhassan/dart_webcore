@@ -48,6 +48,8 @@ abstract class RoutingEntity {
 /// the handler will return a ResponseHolder
 /// the handler itself can have some middlewares that will be executed before it as a local middlewares
 /// the pathTemplate of a handler can't be null
+/// the handler processor should return the ResponseHolder as the final stage of the pipeline
+/// because the pipeline will be closed after the handler processor runs
 class Handler extends RoutingEntity implements RequestProcessor {
   final List<Middleware> middlewares = [];
   @override
