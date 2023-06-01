@@ -31,12 +31,18 @@ class PathCheckers {
     // checking if the path is mine
     List<String> actualLinkParts = askedPath.split('/');
     List<String> templateParts = myPathTemplate.split('/');
-    if (actualLinkParts.length != templateParts.length) {
+    // check for the last part if it contains an * to return true
+
+    if ((actualLinkParts.length != templateParts.length) &&
+        !templateParts.last.contains('*')) {
       // if they don't contain the same amount of parts for each link then not the intended path
       return false;
     }
     for (var i = 0; i < actualLinkParts.length; i++) {
       String tempPart = templateParts[i];
+      if (tempPart.contains('*')) {
+        return true;
+      }
       String pathPart = actualLinkParts[i];
       bool isPlaceHolder = _isPlaceHolder(tempPart);
       if (!isPlaceHolder && tempPart != pathPart) {
@@ -66,7 +72,7 @@ class PathCheckers {
     String linkTemplate,
     String actualLink,
   ) {
-    RegExp regExp = RegExp(r'<([a-zA-Z_]+)>');
+    RegExp regExp = RegExp(r'\*(<([a-zA-Z_]+)>)|<([a-zA-Z_]+)>');
     Map<String, String> extractedData = {};
 
     List<RegExpMatch> matches = regExp.allMatches(linkTemplate).toList();
@@ -75,9 +81,13 @@ class PathCheckers {
 
     for (RegExpMatch match in matches) {
       String placeholder = match.group(0) ?? '';
-      String key = match.group(1) ?? '';
+      String key = _keyRefiner(placeholder);
       int keyIndex = templateParts.indexOf(placeholder);
-
+      if (placeholder.contains('*')) {
+        // this means that the rest of the actualLinkParts will be for this key
+        extractedData[key] = actualLinkParts.sublist(keyIndex).join('/');
+        return extractedData;
+      }
       String placeholderValue = actualLinkParts.elementAt(keyIndex);
 
       extractedData[key] = placeholderValue;
@@ -85,5 +95,12 @@ class PathCheckers {
     var finalRes = extractedData;
 
     return finalRes.cast();
+  }
+
+  String _keyRefiner(String placeHolder) {
+    return placeHolder
+        .replaceAll('>', '')
+        .replaceAll('<', '')
+        .replaceAll('*', '');
   }
 }

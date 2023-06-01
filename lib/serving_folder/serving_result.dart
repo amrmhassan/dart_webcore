@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:custom_shelf/serving_folder/files_serving.dart';
 import 'package:path/path.dart';
 
 abstract class ServingResult {
   late String path;
+  late String parentAlias;
 
   /// this will return either a file path for the file <br>
   /// and List<Map<String, dynamic>> object if the request entity was a folder and the returned list contains the children info
@@ -25,6 +27,9 @@ class FolderResult implements ServingResult {
         name: basename(child.path),
         modified: stats.modified,
         size: stats.type == FileSystemEntityType.file ? stats.size : null,
+        type: stats.type == FileSystemEntityType.file
+            ? StorageEntityType.file
+            : StorageEntityType.folder,
       );
       info.add(entityInfo);
     }
@@ -33,10 +38,15 @@ class FolderResult implements ServingResult {
 
   @override
   String path;
+
   FolderResult(
     this.path, {
+    required this.parentAlias,
     this.allowSendPath = false,
   });
+
+  @override
+  String parentAlias;
 }
 
 class FileResult implements ServingResult {
@@ -47,7 +57,13 @@ class FileResult implements ServingResult {
 
   @override
   String path;
-  FileResult(this.path);
+  FileResult(
+    this.path, {
+    required this.parentAlias,
+  });
+
+  @override
+  String parentAlias;
 }
 
 class EntityInfo {
@@ -55,12 +71,14 @@ class EntityInfo {
   final String name;
   final DateTime modified;
   final int? size;
+  final StorageEntityType type;
 
   EntityInfo({
     required this.path,
     required this.name,
     required this.modified,
     required this.size,
+    required this.type,
   });
 
   Map<String, dynamic> toJSON() {
@@ -69,6 +87,7 @@ class EntityInfo {
       'name': name,
       'modified': modified.toIso8601String(),
       'size': size,
+      'type': type.name,
     };
   }
 }

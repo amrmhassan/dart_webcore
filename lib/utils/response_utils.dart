@@ -55,65 +55,6 @@ class ResponseUtils {
     });
   }
 
-  // void streamMedia(HttpRequest req, String filePath) {
-  //   File file = File(filePath);
-  //   // check if file exists
-  //   if (!file.existsSync()) {
-  //     throw Exception('File $filePath doesn\'t exist');
-  //   }
-
-  //   String? mime = lookupMimeType(filePath);
-
-  //   req.response.statusCode = HttpStatus.partialContent;
-  //   req.response.headers.contentType =
-  //       ContentType.parse(mime ?? 'application/octet-stream');
-  //   req.response.headers.add('Accept-Ranges', 'bytes');
-
-  //   RandomAccessFile raf = file.openSync();
-
-  //   int fileLength = file.lengthSync();
-  //   int start = 0;
-  //   int end = fileLength - 1;
-
-  //   String? range = req.headers.value('range');
-  //   if (range != null) {
-  //     // Parse the range header
-  //     List<String> parts = range.split('=');
-  //     List<String> positions = parts[1].split('-');
-  //     start = int.parse(positions[0]);
-  //     end = positions.length < 2 || int.tryParse(positions[1]) == null
-  //         ? fileLength - 1
-  //         : int.parse(positions[1]);
-  //     final chunkSize = end - start + 1;
-
-  //     // Set the Content-Range header
-  //     req.response.headers
-  //         .add('Content-Range', 'bytes $start-$end/$fileLength');
-  //     req.response.headers.contentLength = chunkSize;
-
-  //     // Seek to the requested position in the file
-  //     raf.setPositionSync(start);
-
-  //     // Create a stream for the requested chunk of data
-  //     final fileStream = Stream.value(raf.readSync(chunkSize));
-
-  //     req.response.addStream(fileStream).then((_) {
-  //       raf.closeSync();
-  //       req.response.close();
-  //     });
-  //   } else {
-  //     // If no range is specified, stream the entire file
-  //     req.response.headers.contentLength = fileLength;
-
-  //     final fileStream = Stream.value(raf.readSync(fileLength));
-
-  //     req.response.addStream(fileStream).then((_) {
-  //       raf.closeSync();
-  //       req.response.close();
-  //     });
-  //   }
-  // }
-
   void streamV2(HttpRequest req, String audioPath) {
     File file = File(audioPath);
     int length = file.lengthSync();

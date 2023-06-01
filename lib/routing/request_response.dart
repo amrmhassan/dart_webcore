@@ -6,6 +6,7 @@ import 'package:custom_shelf/utils/request_decoder.dart';
 import 'dart:convert' as convert;
 
 import 'package:custom_shelf/utils/response_utils.dart';
+import 'package:mime/mime.dart';
 
 import '../serving_folder/files_serving.dart';
 
@@ -74,7 +75,7 @@ class ResponseHolder implements PassedHttpEntity {
   }
 
   Future<String> receiveFile(
-    /// the folder for saving the reveived file
+    /// the folder for saving the received file
     String saveFolderPath, {
     /// if null all file types are allowed
     List<String>? allowedTypes,
@@ -106,32 +107,121 @@ class ResponseHolder implements PassedHttpEntity {
 
     /// this will be on the format alias/path-to-request-entity-file-or-folder
     String requestedEntityPath, {
-    bool allowServingSubFolders = false,
+    bool allowServingFoldersContent = false,
 
     /// if true the user can view the whole content of a sub folder
     /// /folder_alias/sub-folder  , this will return the whole sub-children of that sub-folder
     /// if false this will return null, so the user can only ask for a file either it was direct child of the folder_alias or a sub file
     bool allowViewingEntityPath = false,
+
+    /// if true , then text based files like html, css, js or txt files will be viewed on the browser instead of downloading them
+    /// if false all kind of files will be downloaded to the browser
+    bool viewTextBasedFiles = true,
+
+    /// if true, then if the user request to view a folder content and this folder contains a file named index.html or index.htm then this file will be viewed
+    /// instead of viewing the folder content, this is useful if you are serving a html website
+    /// viewTextBasedFiles must be true for this parameter to have effect
+    bool autoViewIndexTextFiles = true,
+
+    /// these are the text files names which will be automatically viewed if their parent folder was requested
+    List<String> autoViewIndexFilesNames = const [
+      'index.html',
+      'index.htm',
+    ],
   }) {
+    if (autoViewIndexTextFiles) {
+      _checkTextFilesNames(autoViewIndexFilesNames);
+    }
     FileServing fileServing = FileServing(
       folders,
-      allowServingSubFolders: allowServingSubFolders,
+      allowServingSubFolders: allowServingFoldersContent,
       allowViewingEntityPath: allowViewingEntityPath,
     );
 
     var result = fileServing.serveResult(requestedEntityPath);
     if (result is FolderResult) {
-      var res = result.result().map((e) => e.toJSON()).toList();
-
-      return writeJson(res);
+      return _handlerAutoViewHtml(
+        result,
+        autoViewIndexHtml: autoViewIndexTextFiles,
+        viewTextBasedFiles: viewTextBasedFiles,
+        autoViewNames: autoViewIndexFilesNames,
+      );
     } else if (result is FileResult) {
-      return writeFile(result.result());
+      String? mimeType = lookupMimeType(result.result());
+
+      bool textBased = mimeType != null && mimeType.startsWith('text');
+      if (viewTextBasedFiles && textBased) {
+        return streamMedia(result.result());
+      } else {
+        return writeFile(result.result());
+      }
     }
 
     return write(
       'file or folder not found',
       code: HttpStatus.notFound,
     );
+  }
+
+  void _checkTextFilesNames(List<String> names) {
+    for (var name in names) {
+      String? mime = lookupMimeType(name);
+      if (mime == null) {
+        throw Exception('please enter only text file name');
+      }
+      if (!mime.startsWith('text')) {
+        throw Exception('please enter only text file name');
+      }
+    }
+  }
+
+  FutureOr<ResponseHolder> _handlerAutoViewHtml(
+    FolderResult folderResult, {
+    required bool autoViewIndexHtml,
+    required bool viewTextBasedFiles,
+    required List<String> autoViewNames,
+  }) {
+    if (!autoViewIndexHtml || !viewTextBasedFiles) {
+      var res = folderResult.result().map((e) => e.toJSON()).toList();
+
+      return writeJson(res);
+    }
+
+    String? indexHtmlPath = _getHtmlIndexFile(
+      folderResult,
+      autoViewNames: autoViewNames,
+    );
+    if (indexHtmlPath == null) {
+      var res = folderResult.result().map((e) => e.toJSON()).toList();
+
+      return writeJson(res);
+    } else {
+      return streamMedia(indexHtmlPath);
+    }
+  }
+
+  String? _getHtmlIndexFile(
+    FolderResult folderResult, {
+    required List<String> autoViewNames,
+  }) {
+    var children = folderResult.result();
+
+    for (var child in children) {
+      if (child.type == StorageEntityType.file &&
+          (_indexFileNamaMatches(child.name, autoViewNames))) {
+        // here it is an index.html file and i want to view it
+        String filePath =
+            (folderResult.path + child.name).replaceAll('//', '/');
+
+        return filePath;
+      }
+    }
+    return null;
+  }
+
+  bool _indexFileNamaMatches(String fileName, List<String> allowedNames) {
+    return allowedNames
+        .any((element) => element.toLowerCase() == fileName.toLowerCase());
   }
 }
 

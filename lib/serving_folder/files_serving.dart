@@ -23,31 +23,33 @@ class FileServing {
   //
   ;
 
-  StorageEntity? _getEntityPath(String path) {
-    if (path.contains('//')) return null;
-    String parsedPath =
-        path.startsWith('/') ? path.replaceFirst('/', '') : path;
+  StorageEntity? _getEntityPath(String passedPath) {
+    String parsedPath = passedPath.replaceAll('//', '/');
+    // String parsedPath =
+    //     path.startsWith('/') ? path.replaceFirst('/', '') : path;
 
     List<String> pathParts = parsedPath.split('/');
     String folderAlias = pathParts.first;
-    String? folderPath = _folders
-        .cast()
-        .firstWhere(
+    FolderHost? folderHost = _folders.cast().firstWhere(
           (element) => element.alias == folderAlias,
           orElse: () => null,
-        )
-        ?.path;
-    if (folderPath == null) {
+        );
+    if (folderHost == null) {
       return null;
     }
-    String entityPath = folderPath + pathParts.sublist(1).join('/');
+    String entityPath = folderHost.path + pathParts.sublist(1).join('/');
     File file = File(entityPath);
     if (file.existsSync()) {
-      return StorageEntity(entityPath, StorageEntityType.file);
+      return StorageEntity(entityPath, StorageEntityType.file,
+          parentAlias: folderHost.alias);
     }
     Directory directory = Directory(entityPath);
     if (directory.existsSync() && _allowServingSubFolders) {
-      return StorageEntity(entityPath, StorageEntityType.folder);
+      return StorageEntity(
+        entityPath,
+        StorageEntityType.folder,
+        parentAlias: folderHost.alias,
+      );
     }
     return null;
   }
@@ -60,9 +62,16 @@ class FileServing {
       return null;
     }
     if (entity.type == StorageEntityType.folder) {
-      return FolderResult(entity.path, allowSendPath: _allowViewingEntityPath);
+      return FolderResult(
+        entity.path,
+        allowSendPath: _allowViewingEntityPath,
+        parentAlias: entity.parentAlias,
+      );
     } else if (entity.type == StorageEntityType.file) {
-      return FileResult(entity.path);
+      return FileResult(
+        entity.path,
+        parentAlias: entity.parentAlias,
+      );
     }
     return null;
   }
@@ -82,10 +91,8 @@ class FolderHost {
     required this.path,
     required this.alias,
   }) {
-    if (!isAlphaNumeric(alias)) {
-      throw Exception(
-          'alias must only contain numbers or letter like \'alias1\' or \'5images\'');
-    }
+    isFolderAliasValid(alias);
+
     if (!Directory(path).existsSync()) {
       throw Exception('folder $path doesn\'t exist');
     }
@@ -98,11 +105,16 @@ class FolderHost {
 class StorageEntity {
   final StorageEntityType type;
   final String path;
-  const StorageEntity(this.path, this.type);
+  final String parentAlias;
+  const StorageEntity(
+    this.path,
+    this.type, {
+    required this.parentAlias,
+  });
 
   @override
   String toString() {
-    return 'path: $path \ntype: ${type.name}';
+    return 'path: $path \ntype: ${type.name}\nparentAlias: $parentAlias';
   }
 }
 
@@ -111,7 +123,15 @@ enum StorageEntityType {
   folder,
 }
 
-bool isAlphaNumeric(String str) {
-  final pattern = RegExp(r'^[a-zA-Z0-9]+$');
-  return pattern.hasMatch(str);
+void isFolderAliasValid(String str) {
+  String specialChars = '/=?&';
+
+  var chars = specialChars.split('');
+  for (var i = 0; i < chars.length; i++) {
+    var char = chars[i];
+    if (str.contains(char)) {
+      throw Exception(
+          'folder alias can\'t contain special chars from $specialChars');
+    }
+  }
 }
