@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_express/dart_express.dart';
 
 // Pipeline is used to gather multiple routes or handlers and you can add a global middleware for the whole pipeline
+// Cascade is used to gather multiple pipelines for some use cases which need this approach
 void main(List<String> arguments) async {
   // of course you can use other methods like get or post or what ever method you want
   // i am just using get for simplicity so you can test this from your browser
@@ -36,8 +37,13 @@ void main(List<String> arguments) async {
       })
       .addRequestProcessor(authRouter)
       .addRouter(messagesRouter);
+
+  Pipeline app2Pipeline = Pipeline().addHandler('/app2', HttpMethods.geT,
+      (request, response, pathArgs) => response.write('you are in app 2 now'));
+  Cascade cascade = Cascade().add(appPipeline).add(app2Pipeline);
+
   ServerHolder serverHolder = ServerHolder(
-    appPipeline,
+    cascade,
     onPathNotFound: (request, response, pathArgs) {
       return response.writeHtml('path not found 404');
     },

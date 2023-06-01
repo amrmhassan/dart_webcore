@@ -94,7 +94,9 @@ class RequestHandler {
     // here handle the onPath not found
     ResponseHolder responseHolder = ResponseHolder(request);
 
-    await responseHolder.write('path not found').close();
-    return responseHolder;
+    return responseHolder
+      ..response.statusCode = HttpStatus.notFound
+      ..write('path not found')
+      ..close();
   }
 }
