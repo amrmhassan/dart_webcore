@@ -1,5 +1,4 @@
-import '../../utils/path_checkers.dart';
-import '../http_method.dart';
+import '../../matchers/impl/path_checkers.dart';
 import 'http_method.dart';
 import 'processor.dart';
 

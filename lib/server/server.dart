@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:custom_shelf/utils/request_handler.dart';
-
-import '../routing/http_method.dart';
-import '../routing/request_processor.dart';
-import '../routing/routing_entities.dart';
+import '../routing/impl/middleware.dart';
+import '../routing/repo/http_method.dart';
+import '../routing/repo/processor.dart';
+import '../routing/repo/request_processor.dart';
+import 'impl/request_handler.dart';
 
 class ServerHolder {
   final List<HttpServer> _servers = [];

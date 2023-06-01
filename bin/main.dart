@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:custom_shelf/routing/router.dart';
+import 'package:custom_shelf/routing/impl/router.dart';
 import 'package:custom_shelf/server/server.dart';
 import 'package:custom_shelf/serving_folder/files_serving.dart';
 

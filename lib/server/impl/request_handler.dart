@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:custom_shelf/utils/path_checkers.dart';
+import 'package:custom_shelf/matchers/impl/path_checkers.dart';
 
-import '../routing/http_method.dart';
-import '../routing/request_processor.dart';
-import '../routing/request_response.dart';
-import '../routing/routing_entities.dart';
+import '../../routing/impl/middleware.dart';
+import '../../routing/repo/http_method.dart';
+import '../../routing/repo/processor.dart';
+import '../../routing/repo/request_processor.dart';
+import '../../routing/repo/routing_entity.dart';
+import '../repo/passed_http_entity.dart';
+import 'request_holder.dart';
+import 'response_holder.dart';
 
 /// this is the class where choosing the right processors for incoming request runs
 class RequestHandler {
@@ -59,6 +63,7 @@ class RequestHandler {
         }
       }
     }
+
     if (finalResponseHolder == null) {
       return _onPathNotFound(request);
     }

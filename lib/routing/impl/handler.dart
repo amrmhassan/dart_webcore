@@ -1,4 +1,6 @@
-import '../../utils/path_checkers.dart';
+// ignore_for_file: overridden_fields
+
+import '../../matchers/impl/path_checkers.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';

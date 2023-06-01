@@ -1,9 +1,7 @@
-import '../../utils/path_checkers.dart';
-import '../http_method.dart';
+import '../../matchers/impl/path_checkers.dart';
 import '../repo/http_method.dart';
 import '../repo/request_processor.dart';
 import '../repo/routing_entity.dart';
-import '../request_processor.dart';
 
 /// the handler will return a RequestHolder or ResponseHolder
 /// if the return is RequestHolder it will pass it to the next pipeline entity

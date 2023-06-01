@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import '../request_response.dart';
+import '../../server/impl/request_holder.dart';
+import '../../server/impl/response_holder.dart';
+import '../../server/repo/passed_http_entity.dart';
 
 /// this is the processor function that deals with either the middleware or the handler itself
 typedef Processor = FutureOr<PassedHttpEntity> Function(
