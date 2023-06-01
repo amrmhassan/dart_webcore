@@ -1,8 +1,7 @@
-import 'package:custom_shelf/routing/pipeline.dart';
-import 'package:custom_shelf/routing/request_processor.dart';
-import 'package:custom_shelf/routing/routing_entities.dart';
-
-import 'http_method.dart';
+import '../repo/http_method.dart';
+import '../repo/request_processor.dart';
+import '../repo/routing_entity.dart';
+import 'pipeline.dart';
 
 class Cascade implements RequestProcessor {
   List<Pipeline> pipeLines = [];

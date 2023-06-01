@@ -74,17 +74,17 @@ class ResponseHolder implements PassedHttpEntity {
     return this;
   }
 
-  Future<String> receiveFile(
-    /// the folder for saving the received file
-    String saveFolderPath, {
-    /// if null all file types are allowed
-    List<String>? allowedTypes,
+  // Future<String> receiveFile(
+  //   /// the folder for saving the received file
+  //   String saveFolderPath, {
+  //   /// if null all file types are allowed
+  //   List<String>? allowedTypes,
 
-    /// if null there will be no size limit
-    int? maxAllowedSize,
-  }) async {
-    return _responseUtils.receiveFile(request, saveFolderPath);
-  }
+  //   /// if null there will be no size limit
+  //   int? maxAllowedSize,
+  // }) async {
+  //   return _responseUtils.receiveFile(request, saveFolderPath);
+  // }
 
   Future<ResponseHolder> addStream(Stream<List<int>> stream) async {
     await response.addStream(stream);
@@ -102,7 +102,7 @@ class ResponseHolder implements PassedHttpEntity {
   // late String reasonPhrase = response.reasonPhrase;
   // late int statusCode = response.statusCode;
 
-  FutureOr<ResponseHolder> serverFolder(
+  FutureOr<ResponseHolder> serverFolders(
     List<FolderHost> folders,
 
     /// this will be on the format alias/path-to-request-entity-file-or-folder

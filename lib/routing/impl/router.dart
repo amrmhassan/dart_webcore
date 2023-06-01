@@ -1,7 +1,9 @@
-import 'package:custom_shelf/routing/request_processor.dart';
-import 'package:custom_shelf/routing/routing_entities.dart';
-
-import 'http_method.dart';
+import '../repo/http_method.dart';
+import '../repo/processor.dart';
+import '../repo/request_processor.dart';
+import '../repo/routing_entity.dart';
+import 'handler.dart';
+import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
 class Router implements RequestProcessor {
@@ -46,10 +48,6 @@ class Router implements RequestProcessor {
     return addHandler(pathTemplate, HttpMethods.post, processor);
   }
 
-  //! this is a very bad impletion as the added router will only be added to the added handlers in the queue
-  //! router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
-  //! this will only be added to handler1, handler2 and won't be added to handler3
-  //! so i need to keep track of the index of adding the middleware and
   /// routerMiddleware will work on it's following handlers in this router only
   /// and won't have any effect on other handlers of other routers or the handlers that are above the middleware in sequence
   /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
@@ -96,18 +94,4 @@ class Router implements RequestProcessor {
     if (!doHaveHandler) return [];
     return prs;
   }
-  //! add a method that will return a handler
-  //! this class can extend another class that will have a common method that will return a handler
-  //! and this method will take the request and return the right handler
 }
-//! i should have an executer class that has a list of processors
-//! and method execute that return a responseHolder
-//! the list of processors has all middlewares at the first and handler processor at the end
-//! this class executer will be called from the router or cascade or pipeline and will need the actual HttpRequest
-// Executer executer(HttpRequest request){
-// will extract the middlewares and the handler and pass it to the executer class that will be created(only matched middlewares and the matched handler)
-// Executer(middlewares, handler)
-// }
-
-// Executer class itself
-// this class will extract the processors of all middlewares and the handler and execute them in their arrangement because the sequence matters in this case

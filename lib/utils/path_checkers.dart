@@ -1,6 +1,3 @@
-import '../routing/http_method.dart';
-import '../routing/routing_entities.dart';
-
 class PathCheckers {
   final String askedPath;
   final HttpMethod askedMethod;

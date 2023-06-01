@@ -4,20 +4,19 @@ import 'package:custom_shelf/routing/router.dart';
 import 'package:custom_shelf/server/server.dart';
 import 'package:custom_shelf/serving_folder/files_serving.dart';
 
-//! allow
 void main(List<String> arguments) async {
   Router router = Router()
     ..get(
-      '/static/*<path>',
+      '/*<path>',
       (request, response, pathArgs) {
-        return response.serverFolder(
+        return response.serverFolders(
           [
             FolderHost(path: './lib', alias: 'code'),
             FolderHost(path: './bin/files', alias: 'web'),
           ],
           pathArgs['path'],
           viewTextBasedFiles: true,
-          allowServingFoldersContent: false,
+          allowServingFoldersContent: true,
           allowViewingEntityPath: true,
           autoViewIndexTextFiles: true,
           // autoViewIndexFilesNames:

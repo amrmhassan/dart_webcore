@@ -1,8 +1,10 @@
-import 'package:custom_shelf/routing/request_processor.dart';
-import 'package:custom_shelf/routing/router.dart';
-import 'package:custom_shelf/routing/routing_entities.dart';
-
-import 'http_method.dart';
+import '../repo/http_method.dart';
+import '../repo/processor.dart';
+import '../repo/request_processor.dart';
+import '../repo/routing_entity.dart';
+import 'handler.dart';
+import 'middleware.dart';
+import 'router.dart';
 
 class Pipeline implements RequestProcessor {
   final List<RequestProcessor> requestProcessors = [];
@@ -66,8 +68,4 @@ class Pipeline implements RequestProcessor {
     if (!doHaveHandler) return [];
     return prs;
   }
-
-  //! add a method that will return a handler
-  //! this class can extend another class that will have a common method that will return a handler
-  //! and this method will take the request and return the right router
 }
