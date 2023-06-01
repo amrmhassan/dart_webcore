@@ -9,21 +9,24 @@ import 'impl/request_handler.dart';
 
 class ServerHolder {
   final List<HttpServer> _servers = [];
-  final RequestProcessor requestProcessor;
-  final Function()? onRequestDone;
+  final RequestProcessor _requestProcessor;
+  final Function()? _onDone;
 
-  final Function()? onRequestError;
-  final bool? cancelOnError;
-  final Processor? onPathNotFound;
+  final Function()? _onError;
+  final bool? _cancelOnError;
+  final Processor? _onPathNotFound;
   final List<Middleware> _globalMiddlewares = [];
 
   ServerHolder(
-    this.requestProcessor, {
-    this.cancelOnError,
-    this.onRequestDone,
-    this.onRequestError,
-    this.onPathNotFound,
-  });
+    this._requestProcessor, {
+    bool? cancelOnError,
+    Function()? onDone,
+    Function()? onError,
+    Processor? onPathNotFound,
+  })  : _onPathNotFound = onPathNotFound,
+        _onError = onError,
+        _onDone = onDone,
+        _cancelOnError = cancelOnError;
 
   HttpServer _handlerRequest(HttpServer server) {
     String address = server.address == InternetAddress.anyIPv4
@@ -31,15 +34,15 @@ class ServerHolder {
         : server.address.address;
     dartExpressLogger.e('server listening on http://$address:${server.port}');
     RequestHandler handler = RequestHandler(
-      requestProcessor,
+      _requestProcessor,
       _globalMiddlewares,
-      onPathNotFound: onPathNotFound,
+      onPathNotFound: _onPathNotFound,
     );
     server.listen(
       handler.handler,
-      cancelOnError: cancelOnError,
-      onDone: onRequestDone,
-      onError: onRequestError,
+      cancelOnError: _cancelOnError,
+      onDone: _onDone,
+      onError: _onError,
     );
     _servers.add(server);
     return server;
