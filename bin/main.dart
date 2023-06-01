@@ -8,12 +8,12 @@ import 'package:custom_shelf/serving_folder/files_serving.dart';
 void main(List<String> arguments) async {
   Router router = Router()
     ..get(
-      '*<path>',
+      '/static/*<path>',
       (request, response, pathArgs) {
         return response.serverFolder(
           [
             FolderHost(path: './lib', alias: 'code'),
-            FolderHost(path: './bin/files', alias: ''),
+            FolderHost(path: './bin/files', alias: 'web'),
           ],
           pathArgs['path'],
           viewTextBasedFiles: true,

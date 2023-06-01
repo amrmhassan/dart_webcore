@@ -25,8 +25,9 @@ class FileServing {
 
   StorageEntity? _getEntityPath(String passedPath) {
     String parsedPath = passedPath.replaceAll('//', '/');
-    // String parsedPath =
-    //     path.startsWith('/') ? path.replaceFirst('/', '') : path;
+    parsedPath = parsedPath.startsWith('/')
+        ? parsedPath.replaceFirst('/', '')
+        : parsedPath;
 
     List<String> pathParts = parsedPath.split('/');
     String folderAlias = pathParts.first;
@@ -124,7 +125,10 @@ enum StorageEntityType {
 }
 
 void isFolderAliasValid(String str) {
-  String specialChars = '/=?&';
+  if (str.isEmpty) {
+    throw Exception('alias can\'t be empty');
+  }
+  String specialChars = '/=?& ';
 
   var chars = specialChars.split('');
   for (var i = 0; i < chars.length; i++) {
