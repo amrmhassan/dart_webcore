@@ -32,7 +32,7 @@ class ServerHolder {
     String address = server.address == InternetAddress.anyIPv4
         ? '127.0.0.1'
         : server.address.address;
-    dartExpressLogger.e('server listening on http://$address:${server.port}');
+    dartExpressLogger.i('server listening on http://$address:${server.port}');
     RequestHandler handler = RequestHandler(
       _requestProcessor,
       _globalMiddlewares,

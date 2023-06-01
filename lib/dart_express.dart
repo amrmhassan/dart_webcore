@@ -20,3 +20,4 @@ export './dart_express/routing/repo/processor.dart';
 export './dart_express/routing/repo/request_processor.dart';
 export './dart_express/routing/repo/routing_entity.dart';
 export './dart_express/matchers/impl/path_checkers.dart';
+export './dart_express/utils/middlewares/logger_middleware.dart';

@@ -15,7 +15,7 @@ class Pipeline implements RequestProcessor {
   }
 
   Pipeline addMiddleware(
-    String pathTemplate,
+    String? pathTemplate,
     HttpMethod method,
     Processor processor,
   ) {

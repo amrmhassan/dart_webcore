@@ -56,6 +56,10 @@ class Router implements RequestProcessor {
     return insertMiddleware(null, method, processor);
   }
 
+  /// routerMiddleware will work on it's following handlers in this router only
+  /// and won't have any effect on other handlers of other routers or the handlers that are above the middleware in sequence
+  /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
+  /// this will only be added to handler3 only and won't be added to handler1 nor handler 2
   void insertMiddleware(
     String? pathTemplate,
     HttpMethod method,

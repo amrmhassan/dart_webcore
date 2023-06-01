@@ -11,6 +11,8 @@ class RequestHolder implements PassedHttpEntity {
   RequestHolder(this.request);
 
   late HttpHeaders headers = request.headers;
+  late Uri uri = request.uri;
+  late Uri requestedUri = request.requestedUri;
   // late X509Certificate? x509certificate = request.certificate;
   // late HttpConnectionInfo? httpConnectionInfo = request.connectionInfo;
   // late int contentLength = request.contentLength;
@@ -18,10 +20,8 @@ class RequestHolder implements PassedHttpEntity {
   // late String method = request.method;
   // late bool persistentConnection = request.persistentConnection;
   // late String protocolVersion = request.protocolVersion;
-  // late Uri requestedUri = request.requestedUri;
   // late HttpResponse httpResponse = request.response;
   // late HttpSession session = request.session;
-  // late Uri uri = request.uri;
   // late Future<Uint8List> first = request.first;
   // late bool isBroadcast = request.isBroadcast;
   // late Future<bool> isEmpty = request.isEmpty;
