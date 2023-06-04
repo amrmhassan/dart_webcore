@@ -7,13 +7,17 @@ void main(List<String> arguments) async {
     ..insertMiddleware('/hello', HttpMethods.all,
         (request, response, pathArgs) async {
       await Future.delayed(Duration(seconds: 1));
+
       return request;
     }, signature: 'outside')
     ..get(
       '/hello',
       (request, response, pathArgs) => response.writeJson(request.logging),
       signature: 'test',
-    ).addLocalMiddleware((request, response, pathArgs) => request);
+    ).addLocalMiddleware((request, response, pathArgs) {
+      print(request.logging);
+      return request;
+    });
 
   ServerHolder serverHolder = ServerHolder(router);
   await serverHolder.bind(InternetAddress.anyIPv4, 3000);

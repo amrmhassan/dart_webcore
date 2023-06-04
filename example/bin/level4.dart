@@ -5,7 +5,7 @@ import 'package:dart_express/dart_express.dart';
 // in this level you can host a whole static folder or a whole website
 void main(List<String> arguments) async {
   Router router = Router()
-    ..insertRouterMiddleware(HttpMethods.all, logRequest)
+    ..addRouterMiddleware(logRequest)
     ..get(
       // this * means that this pathArg key will have the rest of the path no matter it has a slash "/"or not
       // this pathTemplate will satisfy these paths /website/path/to/file or /website/file.html

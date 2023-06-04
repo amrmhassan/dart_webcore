@@ -5,7 +5,7 @@ import 'package:dart_express/dart_express.dart';
 // routers are used to gather multiple handlers, and you can add a global middleware for the whole router
 void main(List<String> arguments) async {
   Router router = Router()
-    ..insertRouterMiddleware(HttpMethods.all, logRequest)
+    ..addRouterMiddleware(logRequest)
     ..get(
         '/hello',
         (request, response, pathArgs) =>
