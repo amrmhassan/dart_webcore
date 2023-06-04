@@ -7,45 +7,16 @@ import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
 class Router implements RequestProcessor {
-  final List<RoutingEntity> routingEntities = [];
+  final List<RoutingEntity> _routingEntities = [];
   int _handlersNumber = 0;
 
-  /// these are the handlers that will be chosen from to run if the path and the method are fulfilled
-
-  Handler add(Handler handler) {
-    return addHandler(
-      handler.pathTemplate,
-      handler.method,
-      handler.processor,
-      middlewares: handler.middlewares,
-    );
-  }
-
-  Handler addHandler(
-    String pathTemplate,
-    HttpMethod method,
-    Processor processor, {
-    List<Middleware> middlewares = const [],
-    String? signature,
-  }) {
-    _handlersNumber++;
-    var handler = Handler(
-      pathTemplate,
-      method,
-      processor,
-      middlewares: middlewares,
-      signature: signature,
-    );
-    routingEntities.add(handler);
-    return handler;
-  }
-
+  //? adding middlewares
   /// routerMiddleware will work on it's following handlers in this router only
   /// and won't have any effect on other handlers of other routers or the handlers that are above the middleware in sequence
   /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
   /// this will only be added to handler3 only and won't be added to handler1 nor handler 2
   /// `it will work on every request for this router`
-  void addRouterMiddleware(
+  Router addRouterMiddleware(
     Processor processor, {
     String? signature,
   }) {
@@ -61,7 +32,7 @@ class Router implements RequestProcessor {
   /// and won't have any effect on other handlers of other routers or the handlers that are above the middleware in sequence
   /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
   /// this will only be added to handler3 only and won't be added to handler1 nor handler 2
-  void insertMiddleware(
+  Router insertMiddleware(
     String? pathTemplate,
     HttpMethod method,
     Processor processor, {
@@ -73,11 +44,12 @@ class Router implements RequestProcessor {
       processor,
       signature: signature,
     );
-    addRawMiddleware(middleware);
+    return addRawMiddleware(middleware);
   }
 
-  void addRawMiddleware(Middleware middleware) {
-    routingEntities.add(middleware);
+  Router addRawMiddleware(Middleware middleware) {
+    _routingEntities.add(middleware);
+    return this;
   }
 
   @override
@@ -90,7 +62,7 @@ class Router implements RequestProcessor {
     // this is to check if at least one handler is satisfied or not
     // if not then this router isn't the right router so i won't return anything from here at all
     bool doHaveHandler = false;
-    for (var entity in routingEntities) {
+    for (var entity in _routingEntities) {
       bool myPath = entity.isMyPath(path, method);
       if (!myPath) continue;
 
@@ -108,6 +80,32 @@ class Router implements RequestProcessor {
     // if no handler is chosen i won't return any middleware because all middlewares in this router are only applicable to this router
     if (!doHaveHandler) return [];
     return prs;
+  }
+
+  //? adding handlers
+
+  /// these are the handlers that will be chosen from to run if the path and the method are fulfilled
+  Handler addRawHandler(Handler handler) {
+    _handlersNumber++;
+    _routingEntities.add(handler);
+    return handler;
+  }
+
+  Handler addHandler(
+    String pathTemplate,
+    HttpMethod method,
+    Processor processor, {
+    List<Middleware> middlewares = const [],
+    String? signature,
+  }) {
+    var handler = Handler(
+      pathTemplate,
+      method,
+      processor,
+      middlewares: middlewares,
+      signature: signature,
+    );
+    return addRawHandler(handler);
   }
 
   // handlers short hands

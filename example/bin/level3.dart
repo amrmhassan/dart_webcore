@@ -35,7 +35,7 @@ void main(List<String> arguments) async {
             'This message is passed from the pipeline middleware';
         return request;
       })
-      .addRequestProcessor(authRouter)
+      .addRawProcessor(authRouter)
       .addRouter(messagesRouter);
 
   Pipeline app2Pipeline = Pipeline().addHandler('/app2', HttpMethods.geT,
