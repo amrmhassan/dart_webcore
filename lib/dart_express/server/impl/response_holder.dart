@@ -10,7 +10,7 @@ import '../../serving_folder/serving_result.dart';
 import '../../utils/response_utils.dart';
 import '../repo/passed_http_entity.dart';
 
-class ResponseHolder implements PassedHttpEntity {
+class ResponseHolder extends PassedHttpEntity {
   final HttpRequest request;
   HttpResponse get response => request.response;
 

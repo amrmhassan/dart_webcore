@@ -26,34 +26,65 @@ class Router implements RequestProcessor {
     HttpMethod method,
     Processor processor, {
     List<Middleware> middlewares = const [],
+    String? signature,
   }) {
     _handlersNumber++;
-    var handler =
-        Handler(pathTemplate, method, processor, middlewares: middlewares);
+    var handler = Handler(
+      pathTemplate,
+      method,
+      processor,
+      middlewares: middlewares,
+      signature: signature,
+    );
     routingEntities.add(handler);
     return handler;
   }
 
   Handler get(
     String pathTemplate,
-    Processor processor,
-  ) {
-    return addHandler(pathTemplate, HttpMethods.geT, processor);
+    Processor processor, {
+    String? signature,
+    List<Middleware> middlewares = const [],
+  }) {
+    return addHandler(
+      pathTemplate,
+      HttpMethods.geT,
+      processor,
+      signature: signature,
+      middlewares: middlewares,
+    );
   }
 
   Handler post(
     String pathTemplate,
-    Processor processor,
-  ) {
-    return addHandler(pathTemplate, HttpMethods.post, processor);
+    Processor processor, {
+    String? signature,
+    List<Middleware> middlewares = const [],
+  }) {
+    return addHandler(
+      pathTemplate,
+      HttpMethods.post,
+      processor,
+      middlewares: middlewares,
+      signature: signature,
+    );
   }
 
   /// routerMiddleware will work on it's following handlers in this router only
   /// and won't have any effect on other handlers of other routers or the handlers that are above the middleware in sequence
   /// router.get(handler1).get(handler2).addRouterMiddleware(middleware).get(handler3)
   /// this will only be added to handler3 only and won't be added to handler1 nor handler 2
-  void insertRouterMiddleware(HttpMethod method, Processor processor) {
-    return insertMiddleware(null, method, processor);
+  void insertRouterMiddleware(
+    HttpMethod method,
+    Processor processor, {
+    String? signature,
+  }) {
+    return insertMiddleware(
+      null,
+      method,
+      processor,
+      signature: signature,
+    );
   }
 
   /// routerMiddleware will work on it's following handlers in this router only
@@ -63,9 +94,15 @@ class Router implements RequestProcessor {
   void insertMiddleware(
     String? pathTemplate,
     HttpMethod method,
-    Processor processor,
-  ) {
-    Middleware middleware = Middleware(pathTemplate, method, processor);
+    Processor processor, {
+    String? signature,
+  }) {
+    Middleware middleware = Middleware(
+      pathTemplate,
+      method,
+      processor,
+      signature: signature,
+    );
     routingEntities.add(middleware);
   }
 

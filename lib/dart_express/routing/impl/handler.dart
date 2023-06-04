@@ -1,5 +1,8 @@
 // ignore_for_file: overridden_fields
 
+import 'package:path/path.dart';
+import 'package:uuid/uuid.dart';
+
 import '../../matchers/impl/path_checkers.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
@@ -22,13 +25,24 @@ class Handler extends RoutingEntity implements RequestProcessor {
     HttpMethod method,
     Processor processor, {
     List<Middleware> middlewares = const [],
-  }) : super(pathTemplate, method, processor) {
+    String? signature,
+  }) : super(
+          pathTemplate,
+          method,
+          processor,
+          signature: signature,
+        ) {
     this.middlewares.addAll(middlewares);
   }
 
   /// local middlewares will run only for this handler and won't have any effect on other handlers
   Handler addLocalMiddleware(Processor processor) {
-    Middleware middleware = Middleware(pathTemplate, method, processor);
+    Middleware middleware = Middleware(
+      pathTemplate,
+      method,
+      processor,
+      signature: originalSignature,
+    );
     middlewares.add(middleware);
     return this;
   }

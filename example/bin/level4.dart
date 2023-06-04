@@ -17,9 +17,10 @@ void main(List<String> arguments) async {
           FolderHost(path: './bin/website', alias: 'website'),
         ],
         pathArgs['path'],
-        allowServingFoldersContent: true,
-        autoViewIndexTextFiles: true,
+        allowServingFoldersContent: false,
+        autoViewIndexTextFiles: false,
         allowViewingEntityPath: true,
+        viewTextBasedFiles: true,
       ),
     )
     ..get(

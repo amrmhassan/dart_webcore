@@ -1,8 +1,11 @@
+import 'package:dart_express/dart_express/routing/impl/middleware.dart';
+import 'package:uuid/uuid.dart';
+
 import '../../matchers/impl/path_checkers.dart';
 import 'http_method.dart';
 import 'processor.dart';
 
-abstract class RoutingEntity {
+class RoutingEntity {
   /// this is the path of the handler or the middleware not the incoming request path
   /// the null pathTemplate means that this Middleware will run on every request no matter it's path
   /// but the method will restrict this, if you want to make a global middleware just make the pathTemplate to be null and the method to be HttpMethods.all
@@ -14,7 +17,29 @@ abstract class RoutingEntity {
   /// this is the function that will be executed when hitting this routing entity
   final Processor processor;
 
-  const RoutingEntity(this.pathTemplate, this.method, this.processor);
+  String? _signature;
+
+  RoutingEntity(
+    this.pathTemplate,
+    this.method,
+    this.processor, {
+    required String? signature,
+  }) {
+    // validating the signature
+    if (signature != null) {
+      if (signature.contains('|')) {
+        throw Exception('signature can\'t contain the reserved char |');
+      }
+      bool isMiddleware = this is Middleware;
+      String suffix = isMiddleware ? 'M' : 'H';
+      String id = const Uuid().v4();
+
+      _signature = '$suffix|$signature|$id';
+    }
+  }
+
+  String? get signature => _signature;
+  String? get originalSignature => _signature?.split('|')[1];
 
   bool isMyPath(
     String askedPath,

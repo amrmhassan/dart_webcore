@@ -4,10 +4,10 @@ import '../../utils/request_decoder.dart';
 import '../repo/passed_http_entity.dart';
 import 'response_holder.dart';
 
-class RequestHolder implements PassedHttpEntity {
+class RequestHolder extends PassedHttpEntity {
   final HttpRequest request;
   late ResponseHolder response = ResponseHolder(request);
-  Map<String, dynamic> context = {};
+
   RequestHolder(this.request);
 
   late HttpHeaders headers = request.headers;

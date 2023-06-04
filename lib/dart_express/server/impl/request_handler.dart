@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart_express/dart_express/models/routing_log.dart';
+
 import '../../matchers/impl/path_checkers.dart';
 import '../../routing/impl/middleware.dart';
 import '../../routing/repo/http_method.dart';
@@ -29,6 +31,7 @@ class RequestHandler {
   }
 
   FutureOr<ResponseHolder> _getPassedEntity(HttpRequest request) async {
+    PassedHttpEntity? previousHttpEntity;
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
     HttpMethod method = HttpMethod.fromString(request.method);
@@ -38,33 +41,82 @@ class RequestHandler {
       ..._requestProcessor.processors(path, method),
     ];
 
+    // here i handle running the processors
     if (processors.isNotEmpty) {
-      // here just run the onPathNotFound or the default one that will return a not found json obj
-      RequestHolder requestHolder = RequestHolder(request);
-
-      for (var routingEntity in processors) {
-        // here i need to extract the pathArgs from the path itself
-        PassedHttpEntity passedHttpEntity = await routingEntity.processor(
-          requestHolder,
-          requestHolder.response,
-          PathCheckers(
-            askedMethod: method,
-            askedPath: path,
-            routingEntity: routingEntity,
-          ).extractPathData(),
-        );
-        if (passedHttpEntity is RequestHolder) {
-          requestHolder = passedHttpEntity;
-        } else if (passedHttpEntity is ResponseHolder) {
-          // here just break from the loop
-          finalResponseHolder = passedHttpEntity;
-          break;
-        }
-      }
+      finalResponseHolder = await _runProcessors(
+        method: method,
+        path: path,
+        processors: processors,
+        request: request,
+        previousHttpEntity: previousHttpEntity,
+      );
     }
 
     if (finalResponseHolder == null) {
       return _onPathNotFound(request);
+    }
+    return finalResponseHolder;
+  }
+
+  Future<ResponseHolder?> _runProcessors({
+    required HttpRequest request,
+    required List<RoutingEntity> processors,
+    required HttpMethod method,
+    required String path,
+    required PassedHttpEntity? previousHttpEntity,
+  }) async {
+    ResponseHolder? finalResponseHolder;
+
+    // here just run the onPathNotFound or the default one that will return a not found json obj
+    RequestHolder requestHolder = RequestHolder(request);
+
+    for (var routingEntity in processors) {
+      DateTime routingEntityReceived = DateTime.now();
+      // here i need to extract the pathArgs from the path itself
+      PassedHttpEntity passedHttpEntity = await routingEntity.processor(
+        requestHolder,
+        requestHolder.response,
+        PathCheckers(
+          askedMethod: method,
+          askedPath: path,
+          routingEntity: routingEntity,
+        ).extractPathData(),
+      );
+
+      DateTime routingEntityFinished = DateTime.now();
+
+      if (routingEntity.signature != null) {
+        // here add the  log to the passedHttpEntity logging system
+        RoutingLog routingLog = RoutingLog(
+          startTime: routingEntityReceived,
+          endTime: routingEntityFinished,
+          closed: passedHttpEntity is ResponseHolder,
+          closeMessage: (passedHttpEntity is ResponseHolder)
+              ? passedHttpEntity.closeMessage
+              : null,
+        );
+
+        // delete copy all logging to the new one
+        // i need to keep tracking of the previous passed http entity
+        if (previousHttpEntity != null) {
+          for (var entry in previousHttpEntity.logging.entries) {
+            //
+            passedHttpEntity.logging[entry.key] = entry.value;
+          }
+        }
+
+        passedHttpEntity.logging[routingEntity.signature!] =
+            routingLog.toJSON();
+      }
+      if (passedHttpEntity is RequestHolder) {
+        requestHolder = passedHttpEntity;
+      } else if (passedHttpEntity is ResponseHolder) {
+        // here just break from the loop
+        finalResponseHolder = passedHttpEntity;
+
+        //! here add the  log to the passedHttpEntity logging system
+        break;
+      }
     }
     return finalResponseHolder;
   }
