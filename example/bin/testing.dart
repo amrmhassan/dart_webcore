@@ -11,7 +11,7 @@ void main(List<String> arguments) async {
     }, signature: 'outside')
     ..get(
       '/hello',
-      (request, response, pathArgs) => response.writeJson(response.logging),
+      (request, response, pathArgs) => response.writeJson(request.logging),
       signature: 'test',
     ).addLocalMiddleware((request, response, pathArgs) => request);
 

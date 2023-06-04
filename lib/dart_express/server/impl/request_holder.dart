@@ -9,6 +9,8 @@ class RequestHolder extends PassedHttpEntity {
   late ResponseHolder response = ResponseHolder(request);
 
   RequestHolder(this.request);
+  Map<String, dynamic> logging = {};
+  Map<String, dynamic> context = {};
 
   late HttpHeaders headers = request.headers;
   late Uri uri = request.uri;

@@ -1,14 +1,10 @@
 class RoutingLog {
   final DateTime startTime;
   final DateTime endTime;
-  final bool closed;
-  final String? closeMessage;
 
   const RoutingLog({
     required this.startTime,
     required this.endTime,
-    required this.closed,
-    required this.closeMessage,
   });
 
   Map<String, dynamic> toJSON() {
@@ -17,8 +13,8 @@ class RoutingLog {
     return {
       'received': startTime.toIso8601String(),
       'abandoned': endTime.toIso8601String(),
-      'closed': closed,
-      'closeMsg': closeMessage,
+      // 'closed': closed,
+      // 'closeMsg': closeMessage,
       'timeTaken': '$timeTakenInMs ms',
     };
   }

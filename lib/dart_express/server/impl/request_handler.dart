@@ -31,7 +31,6 @@ class RequestHandler {
   }
 
   FutureOr<ResponseHolder> _getPassedEntity(HttpRequest request) async {
-    PassedHttpEntity? previousHttpEntity;
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
     HttpMethod method = HttpMethod.fromString(request.method);
@@ -48,7 +47,6 @@ class RequestHandler {
         path: path,
         processors: processors,
         request: request,
-        previousHttpEntity: previousHttpEntity,
       );
     }
 
@@ -63,7 +61,6 @@ class RequestHandler {
     required List<RoutingEntity> processors,
     required HttpMethod method,
     required String path,
-    required PassedHttpEntity? previousHttpEntity,
   }) async {
     ResponseHolder? finalResponseHolder;
 
@@ -85,36 +82,23 @@ class RequestHandler {
 
       DateTime routingEntityFinished = DateTime.now();
 
-      if (routingEntity.signature != null) {
+      if (routingEntity.signature != null &&
+          passedHttpEntity is RequestHolder) {
         // here add the  log to the passedHttpEntity logging system
         RoutingLog routingLog = RoutingLog(
           startTime: routingEntityReceived,
           endTime: routingEntityFinished,
-          closed: passedHttpEntity is ResponseHolder,
-          closeMessage: (passedHttpEntity is ResponseHolder)
-              ? passedHttpEntity.closeMessage
-              : null,
         );
-
-        // delete copy all logging to the new one
-        // i need to keep tracking of the previous passed http entity
-        if (previousHttpEntity != null) {
-          for (var entry in previousHttpEntity.logging.entries) {
-            //
-            passedHttpEntity.logging[entry.key] = entry.value;
-          }
-        }
 
         passedHttpEntity.logging[routingEntity.signature!] =
             routingLog.toJSON();
       }
+
       if (passedHttpEntity is RequestHolder) {
         requestHolder = passedHttpEntity;
       } else if (passedHttpEntity is ResponseHolder) {
         // here just break from the loop
         finalResponseHolder = passedHttpEntity;
-
-        //! here add the  log to the passedHttpEntity logging system
         break;
       }
     }
