@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'dart:convert' as convert;
 
+import 'package:dart_express/dart_express/server/impl/request_holder.dart';
 import 'package:mime/mime.dart';
 
 import '../../serving_folder/files_serving.dart';
@@ -11,8 +12,8 @@ import '../../utils/response_utils.dart';
 import '../repo/passed_http_entity.dart';
 
 class ResponseHolder extends PassedHttpEntity {
-  final HttpRequest request;
-  HttpResponse get response => request.response;
+  final RequestHolder request;
+  HttpResponse get response => request.response.response;
 
   ResponseHolder(this.request);
   bool closed = false;

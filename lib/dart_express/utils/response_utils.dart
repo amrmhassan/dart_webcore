@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart_express/dart_express/server/impl/request_holder.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
@@ -8,7 +9,7 @@ import '../../constants/runtime_variables.dart';
 
 //! this class needs some editing and testing as uploading file doesn't work very well
 class ResponseUtils {
-  void sendChunkedFile(HttpRequest req, String filePath) {
+  void sendChunkedFile(RequestHolder req, String filePath) {
     File file = File(filePath);
     // check if file exists
     if (!file.existsSync()) {
@@ -18,7 +19,7 @@ class ResponseUtils {
         file.path.split('/').last; // Extract the filename from the file path
     String? mime = lookupMimeType(filePath);
 
-    req.response.statusCode = HttpStatus.ok;
+    req.response.response.statusCode = HttpStatus.ok;
     req.response.headers
       ..contentType = ContentType.parse(mime ?? 'application/octet-stream')
       ..add('Content-Disposition',
@@ -37,7 +38,7 @@ class ResponseUtils {
       end = positions.length < 2 || int.tryParse(positions[1]) == null
           ? fileLength - 1
           : int.parse(positions[1]);
-      req.response.statusCode = HttpStatus.partialContent;
+      req.response.response.statusCode = HttpStatus.partialContent;
       req.response.headers
         ..contentLength = end - start + 1
         ..add('Content-Range', 'bytes $start-$end/$fileLength');
@@ -57,7 +58,7 @@ class ResponseUtils {
     });
   }
 
-  void streamV2(HttpRequest req, String audioPath) {
+  void streamV2(RequestHolder req, String audioPath) {
     File file = File(audioPath);
     int length = file.lengthSync();
 
@@ -74,13 +75,13 @@ class ResponseUtils {
     String? mime = lookupMimeType(audioPath);
     // print('Needed bytes from $start to $end');
 
-    req.response.statusCode = HttpStatus.partialContent;
+    req.response.response.statusCode = HttpStatus.partialContent;
     req.response.headers
       ..contentType = ContentType.parse(mime ?? 'audio/mpeg')
       ..contentLength = end - start
       ..add('Accept-Ranges', 'bytes')
       ..add('Content-Range', 'bytes $start-$end/$length');
-    file.openRead(start, end).pipe(req.response);
+    file.openRead(start, end).pipe(req.response.response);
   }
 
   Future<String> receiveFile(HttpRequest request, String saveDirPath) async {

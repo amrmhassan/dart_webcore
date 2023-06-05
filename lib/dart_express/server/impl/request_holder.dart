@@ -6,7 +6,7 @@ import 'response_holder.dart';
 
 class RequestHolder extends PassedHttpEntity {
   final HttpRequest request;
-  late ResponseHolder response = ResponseHolder(request);
+  late ResponseHolder response = ResponseHolder(this);
 
   RequestHolder(this.request);
   Map<String, dynamic> logging = {};

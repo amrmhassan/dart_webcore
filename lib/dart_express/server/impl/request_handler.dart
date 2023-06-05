@@ -18,22 +18,26 @@ class RequestHandler {
   final RequestProcessor _requestProcessor;
   final Processor? _onPathNotFoundParam;
   final List<Middleware> _globalMiddlewares;
+  final Processor? _onResponseClosed;
 
   RequestHandler(
     this._requestProcessor,
     this._globalMiddlewares, {
     Processor? onPathNotFound,
-  }) : _onPathNotFoundParam = onPathNotFound;
+    Processor? onResponseClosed,
+  })  : _onPathNotFoundParam = onPathNotFound,
+        _onResponseClosed = onResponseClosed;
 
   void handler(HttpRequest request) async {
-    var responseHolder = await _getPassedEntity(request);
+    RequestHolder requestHolder = RequestHolder(request);
+    var responseHolder = await _getPassedEntity(requestHolder);
     await responseHolder.close();
   }
 
-  FutureOr<ResponseHolder> _getPassedEntity(HttpRequest request) async {
+  FutureOr<ResponseHolder> _getPassedEntity(RequestHolder request) async {
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
-    HttpMethod method = HttpMethod.fromString(request.method);
+    HttpMethod method = HttpMethod.fromString(request.request.method);
     var matchedGlobalMiddlewares = _getMatchedGlobalMiddlewares(path, method);
     var processors = [
       ...matchedGlobalMiddlewares,
@@ -46,7 +50,7 @@ class RequestHandler {
         method: method,
         path: path,
         processors: processors,
-        request: request,
+        request: request.request,
       );
     }
 
@@ -99,6 +103,7 @@ class RequestHandler {
       } else if (passedHttpEntity is ResponseHolder) {
         // here just break from the loop
         finalResponseHolder = passedHttpEntity;
+
         break;
       }
     }
@@ -119,10 +124,10 @@ class RequestHandler {
     return prs;
   }
 
-  Future<ResponseHolder> _onPathNotFound(HttpRequest request) async {
+  Future<ResponseHolder> _onPathNotFound(RequestHolder request) async {
     if (_onPathNotFoundParam != null) {
       var res = await _onPathNotFoundParam!(
-          RequestHolder(request), ResponseHolder(request), {});
+          RequestHolder(request.request), ResponseHolder(request), {});
       if (res is ResponseHolder) {
         return res;
       }
