@@ -15,3 +15,9 @@ typedef Processor = FutureOr<PassedHttpEntity> Function(
   /// {'user_id':159876663} this will be the pathArgs map
   Map<String, dynamic> pathArgs,
 );
+
+typedef AfterProcessor = FutureOr<void> Function(
+  RequestHolder request,
+  ResponseHolder response,
+  Map<String, dynamic> pathArgs,
+);

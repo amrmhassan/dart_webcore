@@ -16,7 +16,6 @@ class ServerHolder {
   final bool? _cancelOnError;
   final Processor? _onPathNotFound;
   final List<Middleware> _globalMiddlewares = [];
-  final Processor? _onResponseClosed;
 
   ServerHolder(
     this._requestProcessor, {
@@ -24,18 +23,16 @@ class ServerHolder {
     Function()? onDone,
     Function()? onError,
     Processor? onPathNotFound,
-    Processor? onResponseClosed,
   })  : _onPathNotFound = onPathNotFound,
         _onError = onError,
         _onDone = onDone,
-        _cancelOnError = cancelOnError,
-        _onResponseClosed = onResponseClosed;
+        _cancelOnError = cancelOnError;
 
   HttpServer _handlerRequest(HttpServer server) {
-    // String address = server.address == InternetAddress.anyIPv4
-    //     ? '127.0.0.1'
-    //     : server.address.address;
-    dartExpressLogger.i('server listening on port ${server.port}');
+    String address = server.address == InternetAddress.anyIPv4
+        ? '127.0.0.1'
+        : server.address.address;
+    dartExpressLogger.i('server listening on http://$address:${server.port}');
     RequestHandler handler = RequestHandler(
       _requestProcessor,
       _globalMiddlewares,
