@@ -1,6 +1,6 @@
 library dart_express;
 
-export './constants/runtime_variables.dart';
+export './dart_express/constants/runtime_variables.dart';
 export './dart_express/routing/impl/router.dart';
 export './dart_express/routing/impl/cascade.dart';
 export './dart_express/routing/impl/handler.dart';

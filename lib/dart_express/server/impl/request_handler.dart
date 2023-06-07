@@ -132,7 +132,7 @@ class RequestHandler {
 
     return responseHolder
       ..response.statusCode = HttpStatus.notFound
-      ..write('path not found')
+      ..write('path not found, try changing path or method')
       ..close();
   }
 }

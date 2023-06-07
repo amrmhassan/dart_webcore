@@ -8,6 +8,7 @@ import 'router.dart';
 
 class Pipeline implements RequestProcessor {
   final List<RequestProcessor> requestProcessors = [];
+  List<Middleware> upperMiddlewares = [];
 
   /// you can add any request processor, (handler, middleware, router or even another pipeline) but it's not recommended to add nested pipelines
   /// just use Cascade to gather pipelines together
@@ -16,7 +17,26 @@ class Pipeline implements RequestProcessor {
     return this;
   }
 
-  /// this will run for each request to this pipeline
+  Pipeline addUpperRawMiddleware(Middleware middleware) {
+    upperMiddlewares.add(middleware);
+    return this;
+  }
+
+  Pipeline addUpperMiddleware(
+    String? pathTemplate,
+    HttpMethod method,
+    Processor processor, {
+    String? signature,
+  }) {
+    Middleware middleware = Middleware(
+      pathTemplate,
+      method,
+      processor,
+      signature: signature,
+    );
+    return addUpperRawMiddleware(middleware);
+  }
+
   Pipeline addPipelineMiddleware(
     Processor processor, {
     String? signature,

@@ -6,7 +6,7 @@ void main(List<String> arguments) async {
   Router router = Router()
     ..insertMiddleware('/hello', HttpMethods.all,
         (request, response, pathArgs) async {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(seconds: 5));
 
       return request;
     }, signature: 'outside')

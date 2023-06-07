@@ -44,14 +44,14 @@ class ResponseHolder extends PassedHttpEntity {
     return this;
   }
 
-  ResponseHolder writeJson(dynamic obj) {
+  ResponseHolder writeJson(dynamic obj, {int? code}) {
     response.headers.contentType = ContentType.json;
-    return write(convert.json.encode(obj));
+    return write(convert.json.encode(obj), code: code);
   }
 
-  ResponseHolder writeHtml(String html) {
+  ResponseHolder writeHtml(String html, {int? code}) {
     response.headers.contentType = ContentType.html;
-    return write(html);
+    return write(html, code: code);
   }
 
   ResponseHolder writeBinary(List<int> bytes) {

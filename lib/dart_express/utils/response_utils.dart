@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
-import '../../constants/runtime_variables.dart';
+import '../constants/runtime_variables.dart';
 
 //! this class needs some editing and testing as uploading file doesn't work very well
 class ResponseUtils {

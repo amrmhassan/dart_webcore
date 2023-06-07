@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../constants/runtime_variables.dart';
+import '../constants/runtime_variables.dart';
 import '../routing/impl/middleware.dart';
 import '../routing/repo/http_method.dart';
 import '../routing/repo/processor.dart';
@@ -106,10 +106,19 @@ class ServerHolder {
     Processor processor, {
     String? pathTemplate,
     HttpMethod method = HttpMethods.all,
+    String? signature,
   }) {
-    Middleware middleware = Middleware(pathTemplate, method, processor);
-    _globalMiddlewares.add(middleware);
+    Middleware middleware = Middleware(
+      pathTemplate,
+      method,
+      processor,
+      signature: signature,
+    );
+    return addGlobalRawMiddleWare(middleware);
+  }
 
+  ServerHolder addGlobalRawMiddleWare(Middleware middleware) {
+    _globalMiddlewares.add(middleware);
     return this;
   }
 }

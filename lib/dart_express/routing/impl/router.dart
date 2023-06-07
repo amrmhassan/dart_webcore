@@ -8,6 +8,7 @@ import 'middleware.dart';
 /// this router will return only one matching handler, it holds some handlers and their middlewares
 class Router implements RequestProcessor {
   final List<RoutingEntity> _routingEntities = [];
+  final List<Middleware> _upperMiddlewares = [];
   int _handlersNumber = 0;
 
   //? adding middlewares
@@ -26,6 +27,30 @@ class Router implements RequestProcessor {
       processor,
       signature: signature,
     );
+  }
+
+  /// upper middlewares will be add before any other handler or middleware in the router
+  /// and they have their own order, so first added upper middlewares will be executed first and so on
+  Router addUpperRawMiddleware(Middleware middleware) {
+    _upperMiddlewares.add(middleware);
+    return this;
+  }
+
+  /// upper middlewares will be add before any other handler or middleware in the router
+  /// and they have their own order, so first added upper middlewares will be executed first and so on
+  Router addUpperMiddleware(
+    String? pathTemplate,
+    HttpMethod method,
+    Processor processor, {
+    String? signature,
+  }) {
+    Middleware middleware = Middleware(
+      pathTemplate,
+      method,
+      processor,
+      signature: signature,
+    );
+    return addUpperRawMiddleware(middleware);
   }
 
   /// routerMiddleware will work on it's following handlers in this router only
@@ -62,6 +87,7 @@ class Router implements RequestProcessor {
     // this is to check if at least one handler is satisfied or not
     // if not then this router isn't the right router so i won't return anything from here at all
     bool doHaveHandler = false;
+    _routingEntities.insertAll(0, _upperMiddlewares);
     for (var entity in _routingEntities) {
       bool myPath = entity.isMyPath(path, method);
       if (!myPath) continue;
