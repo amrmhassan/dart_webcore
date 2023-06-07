@@ -88,6 +88,7 @@ class Pipeline implements RequestProcessor {
 
   @override
   List<RoutingEntity> processors(String path, HttpMethod method) {
+    requestProcessors.insertAll(0, upperMiddlewares);
     List<RoutingEntity> prs = [];
     bool doHaveHandler = false;
     for (var requestProcessor in requestProcessors) {

@@ -1,5 +1,11 @@
 library dart_express;
 
+//! add addUpperMiddleware
+//! add addRawUpperMiddleware
+//! to router, pipeline
+
+//! edit cascade to accept adding routers
+
 export './dart_express/constants/runtime_variables.dart';
 export './dart_express/routing/impl/router.dart';
 export './dart_express/routing/impl/cascade.dart';
