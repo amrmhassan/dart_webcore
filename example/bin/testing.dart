@@ -3,22 +3,23 @@ import 'dart:io';
 import 'package:dart_express/dart_express.dart';
 
 void main(List<String> arguments) async {
-  Router router = Router()
-    ..insertMiddleware('/hello', HttpMethods.all,
-        (request, response, pathArgs) async {
-      await Future.delayed(Duration(seconds: 5));
+  // if the user asked for /getFile/website/file.txt
+  // this handler will be executed
+  // /getFile will run route to this handler and /website will route to the corresponding folder from this alias
+  // you can make nested folders as you need
 
-      return request;
-    }, signature: 'outside')
-    ..get(
-      '/hello',
-      (request, response, pathArgs) => response.writeJson(request.logging),
-      signature: 'test',
-    ).addLocalMiddleware((request, response, pathArgs) {
-      print(request.logging);
-      return request;
-    });
+  Handler pathArgHandler = Handler(
+    '/getFile/*<path>',
+    HttpMethods.geT,
+    (request, response, pathArgs) => response.serveFolders(
+      [
+        FolderHost(path: './bin/website', alias: 'website'),
+      ],
+      pathArgs['path'],
+      allowServingFoldersContent: true,
+    ),
+  );
 
-  ServerHolder serverHolder = ServerHolder(router);
-  await serverHolder.bind(InternetAddress.anyIPv4, 3000);
+  ServerHolder serverHolder = ServerHolder(pathArgHandler);
+  serverHolder.bind(InternetAddress.anyIPv4, 3000);
 }

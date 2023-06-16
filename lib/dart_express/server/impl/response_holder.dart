@@ -99,7 +99,7 @@ class ResponseHolder extends PassedHttpEntity {
   // late String reasonPhrase = response.reasonPhrase;
   // late int statusCode = response.statusCode;
 
-  FutureOr<ResponseHolder> serverFolders(
+  FutureOr<ResponseHolder> serveFolders(
     List<FolderHost> folders,
 
     /// this will be on the format alias/path-to-request-entity-file-or-folder
@@ -118,6 +118,7 @@ class ResponseHolder extends PassedHttpEntity {
     /// if true, then if the user request to view a folder content and this folder contains a file named index.html or index.htm then this file will be viewed
     /// instead of viewing the folder content, this is useful if you are serving a html website
     /// viewTextBasedFiles must be true for this parameter to have effect
+    /// allowServingFoldersContent must be true for this to take effect
     bool autoViewIndexTextFiles = true,
 
     /// these are the text files names which will be automatically viewed if their parent folder was requested
@@ -125,7 +126,7 @@ class ResponseHolder extends PassedHttpEntity {
       'index.html',
       'index.htm',
     ],
-  }) {
+  }) async {
     if (autoViewIndexTextFiles) {
       _checkTextFilesNames(autoViewIndexFilesNames);
     }
@@ -154,10 +155,12 @@ class ResponseHolder extends PassedHttpEntity {
       }
     }
 
-    return write(
+    write(
       'file or folder not found',
       code: HttpStatus.notFound,
     );
+    await response.close();
+    return this;
   }
 
   void _checkTextFilesNames(List<String> names) {
