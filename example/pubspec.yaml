@@ -5,11 +5,11 @@ publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
+  sdk: '>=2.19.6 <4.0.0'
 
 dependencies:
-  dart_web_server:
-    path: ../../dart_web_server
+  dart_webcore:
+    path: ../../dart_webcore
 
 dev_dependencies:
   lints: ^2.0.0

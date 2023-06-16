@@ -1,9 +1,9 @@
 # The final solution to HttpServers with dart 
 
-<img src="https://github.com/amrmhassan/dart_web_server/blob/master/assets/logo.png?raw=true" alt="Image description" style="width: 400px; height: auto;
+<img src="https://github.com/amrmhassan/dart_webcore/blob/master/assets/logo.png?raw=true" alt="Image description" style="width: 400px; height: auto;
   border-radius: 10px;">
 
-`dart_web_server` handles (Advanced Routing, HttpServers, websites hosting, static files hosting and much more...)
+`dart_webcore` handles (Advanced Routing, HttpServers, websites hosting, static files hosting and much more...)
 
 ## Features
 
@@ -14,7 +14,7 @@
 ## Tutorial  
 
 ### - Routing ( Request Processors )
-`dart_web_server` consist of different layers which are a type of `RequestProcessor` which mean they can handle incoming requests.
+`dart_webcore` consist of different layers which are a type of `RequestProcessor` which mean they can handle incoming requests.
 
 1. Handler: is the final stage in the life of the request in the server, handlers must return a response to the client ( API consumer ), a handler can have a local middleware that will only work for this handler, 
 Handler needs a pathTemplate a method and a processor function.
@@ -110,7 +110,7 @@ Handler pathArgHandler = Handler(
 ```
 
 ### - Website Hosting
-with dart_web_server you can host a full folder with all of it's content either this folder is a website folder or a normal static files folder.  
+with dart_webcore you can host a full folder with all of it's content either this folder is a website folder or a normal static files folder.  
 you just need to set an alias for that folder path in order to protect your system path to make it hidden from API consumers.
 for example
 ```dart
