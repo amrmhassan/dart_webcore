@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_express/dart_express.dart';
+import 'package:dart_web_server/dart_web_server.dart';
 
 // in this level you can host a whole static folder or a whole website
 void main(List<String> arguments) async {
@@ -8,7 +8,7 @@ void main(List<String> arguments) async {
     ..get(
         '/hello/<name>',
         (request, response, pathArgs) => response.writeHtml(
-            '<h1>Hello from dart_express <br>Your passed argument is ${pathArgs['name']}</h1>'))
+            '<h1>Hello from dart_web_server <br>Your passed argument is ${pathArgs['name']}</h1>'))
     ..get(
       // this * means that this pathArg key will have the rest of the path no matter it has a slash "/"or not
       // this pathTemplate will satisfy these paths /website/path/to/file or /website/file.html

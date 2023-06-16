@@ -8,8 +8,8 @@ environment:
   sdk: '>=2.19.6 <3.0.0'
 
 dependencies:
-  dart_express:
-    path: ../../dart_express/
+  dart_web_server:
+    path: ../../dart_web_server
 
 dev_dependencies:
   lints: ^2.0.0

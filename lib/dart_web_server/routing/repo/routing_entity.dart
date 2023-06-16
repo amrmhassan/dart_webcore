@@ -1,7 +1,7 @@
-import 'package:dart_express/dart_express/routing/impl/middleware.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../matchers/impl/path_checkers.dart';
+import '../impl/middleware.dart';
 import 'http_method.dart';
 import 'processor.dart';
 

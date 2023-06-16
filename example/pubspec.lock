@@ -81,7 +81,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  dart_express:
+  dart_web_server:
     dependency: "direct main"
     description:
       path: ".."
