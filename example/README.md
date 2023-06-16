@@ -1,2 +1,2 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+you can visit github repo to see examples
+visit this github folder: [https://github.com/amrmhassan/dart_webcore/tree/master/example/bin](https://github.com/amrmhassan/dart_webcore/tree/master/example/bin)
