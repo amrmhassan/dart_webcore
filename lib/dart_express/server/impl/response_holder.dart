@@ -67,7 +67,7 @@ class ResponseHolder extends PassedHttpEntity {
   }
 
   Future<ResponseHolder> streamMedia(String filePath) async {
-    _responseUtils.streamV2(request, filePath);
+    await _responseUtils.streamV2(request, filePath);
     return this;
   }
 

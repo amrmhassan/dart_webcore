@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:mime/mime.dart';
-import 'package:path/path.dart' as path;
+// import 'package:path/path.dart' as path;
 
-import '../constants/runtime_variables.dart';
+// import '../constants/runtime_variables.dart';
 
 //! this class needs some editing and testing as uploading file doesn't work very well
 class ResponseUtils {
@@ -51,86 +52,112 @@ class ResponseUtils {
     req.response
         .addStream(fileStream
             .handleError((e) => throw Exception('Error reading file: $e')))
-        .then((_) {
+        .then((_) async {
       raf.closeSync();
-      req.response.close();
+      await req.response.close();
     });
   }
 
-  void streamV2(HttpRequest req, String audioPath) {
+  Future<void> streamV2(HttpRequest req, String audioPath) async {
     File file = File(audioPath);
     int length = file.lengthSync();
-
-    // this formate 'bytes=0-' means that i want the bytes from the 0 to the end
-    // so the end here means the end of the file
-    // if it was 'bytes=0-1000' this means that i need the bytes from 0 to 1000
-    String range = req.headers.value('range') ?? 'bytes=0-';
-    List<String> parts = range.split('=');
-    List<String> positions = parts[1].split('-');
-    int start = int.parse(positions[0]);
-    int end = positions.length < 2 || int.tryParse(positions[1]) == null
-        ? length
-        : int.parse(positions[1]);
     String? mime = lookupMimeType(audioPath);
-    // print('Needed bytes from $start to $end');
 
-    req.response.statusCode = HttpStatus.partialContent;
-    req.response.headers
-      ..contentType = ContentType.parse(mime ?? 'audio/mpeg')
-      ..contentLength = end - start
-      ..add('Accept-Ranges', 'bytes')
-      ..add('Content-Range', 'bytes $start-$end/$length');
-    file.openRead(start, end).pipe(req.response);
+    String? rangeHeader = req.headers.value(HttpHeaders.rangeHeader);
+    if (rangeHeader != null) {
+      var rangeBytes = rangeHeader.replaceFirst('bytes=', '').split('-');
+      int start = int.parse(rangeBytes[0]);
+      int end = rangeBytes[1].isEmpty ? length - 1 : int.parse(rangeBytes[1]);
+
+      req.response.statusCode = HttpStatus.partialContent;
+      req.response.headers
+        ..contentType = ContentType.parse(mime ?? 'audio/mpeg')
+        ..add('Accept-Ranges', 'bytes')
+        ..add('Content-Range', 'bytes $start-$end/$length')
+        ..contentLength = end - start + 1;
+
+      var raf = file.openSync();
+      await raf.setPosition(start);
+      var chunkSize = 64 * 1024; // 64KB, you can adjust this as needed
+      var bytesLeft = end - start + 1;
+      while (bytesLeft > 0) {
+        var chunk = await raf.read(min(chunkSize, bytesLeft));
+        req.response.add(chunk);
+        bytesLeft -= chunk.length;
+      }
+
+      await raf.close();
+    } else {
+      req.response.headers
+        ..contentType = ContentType.parse(mime ?? 'audio/mpeg')
+        ..contentLength = length;
+      await file.openRead().pipe(req.response);
+    }
+
+    await req.response.close();
   }
 
-  Future<String> receiveFile(HttpRequest request, String saveDirPath) async {
-    Completer<String> filePathCompleter = Completer<String>();
+  // Future<String> receiveFile(HttpRequest request, String saveDirPath) async {
+  //   Completer<String> filePathCompleter = Completer<String>();
 
-    // Get the filename from the request headers or generate a unique filename
-    var filename = request.headers.value('content-disposition');
-    var headers = request.headers;
-    var copiedHeaders = {};
-    headers.forEach((name, values) {
-      copiedHeaders[name] = values;
-    });
-    int length = request.headers.contentLength;
-    if (filename != null) {
-      var regex = RegExp(r'filename="(.*)"');
-      var match = regex.firstMatch(filename);
-      if (match != null) {
-        filename = match.group(1);
-      }
-    } else {
-      var now = DateTime.now().millisecondsSinceEpoch;
-      filename = 'file_$now';
+  //   // Get the filename from the request headers or generate a unique filename
+  //   var filename = request.headers.value('content-disposition');
+  //   var headers = request.headers;
+  //   var copiedHeaders = {};
+  //   headers.forEach((name, values) {
+  //     copiedHeaders[name] = values;
+  //   });
+  //   int length = request.headers.contentLength;
+  //   if (filename != null) {
+  //     var regex = RegExp(r'filename="(.*)"');
+  //     var match = regex.firstMatch(filename);
+  //     if (match != null) {
+  //       filename = match.group(1);
+  //     }
+  //   } else {
+  //     var now = DateTime.now().millisecondsSinceEpoch;
+  //     filename = 'file_$now';
+  //   }
+
+  //   var saveDir = Directory(saveDirPath);
+  //   if (!saveDir.existsSync()) {
+  //     saveDir.createSync(recursive: true);
+  //   }
+
+  //   var savePath = path.join(saveDir.path, filename);
+  //   var file = await File(savePath).open(mode: FileMode.write);
+
+  //   var sub = request.listen(
+  //     (List<int> chunk) async {
+  //       await file.writeFrom(chunk);
+  //       if (file.lengthSync() == length) {
+  //         // Close the file and complete the method
+  //         await file.close();
+  //         filePathCompleter.complete(savePath);
+  //       }
+  //     },
+  //     onError: (error) {
+  //       dartExpressLogger.e(error);
+  //       // Handle any errors that occur during the stream subscription
+  //       filePathCompleter.completeError(error);
+  //     },
+  //     cancelOnError: true,
+  //   );
+
+  //   await sub.asFuture<void>();
+  //   return filePathCompleter.future;
+  // }
+
+  Future sendFileToView(HttpRequest req, String filePath) async {
+    File file = File(filePath);
+    // check if file exists
+    if (!file.existsSync()) {
+      throw Exception('File $filePath doesn\'t exist');
     }
 
-    var saveDir = Directory(saveDirPath);
-    if (!saveDir.existsSync()) {
-      saveDir.createSync(recursive: true);
-    }
-
-    var savePath = path.join(saveDir.path, filename);
-    var file = await File(savePath).open(mode: FileMode.write);
-
-    var sub = request.listen(
-      (List<int> chunk) async {
-        await file.writeFrom(chunk);
-        if (file.lengthSync() == length) {
-          // Close the file and complete the method
-          await file.close();
-          filePathCompleter.complete(savePath);
-        }
-      },
-      onError: (error) {
-        dartExpressLogger.e(error);
-        // Handle any errors that occur during the stream subscription
-        filePathCompleter.completeError(error);
-      },
-      cancelOnError: true,
-    );
-
-    await sub.asFuture<void>();
-    return filePathCompleter.future;
+    var mimeType = lookupMimeType(filePath).toString();
+    req.response.headers.contentType = ContentType.parse(mimeType);
+    await file.openRead().pipe(req.response);
+    await req.response.close();
   }
 }

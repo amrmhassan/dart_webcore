@@ -5,7 +5,6 @@ import 'package:dart_express/dart_express.dart';
 // in this level you can host a whole static folder or a whole website
 void main(List<String> arguments) async {
   Router router = Router()
-    ..addRouterMiddleware(logRequest)
     ..get(
         '/hello/<name>',
         (request, response, pathArgs) => response.writeHtml(
@@ -16,17 +15,21 @@ void main(List<String> arguments) async {
       // if you have for example a path template like this /static/*<path> you must use a path from your html file like this /static/website/path/to/style-file.css or path to .js file or whatever
       '/*<path>',
       // in your html files paths make sure you are requesting the right path from the server (not the relative path from your html file)
-      (request, response, pathArgs) => response.serveFolders(
-        [
-          FolderHost(path: './bin/website', alias: 'website'),
-        ],
-        pathArgs['path'],
-        allowServingFoldersContent: true,
-        autoViewIndexTextFiles: true,
-        allowViewingEntityPath: true,
-        viewTextBasedFiles: true,
-      ),
+      (request, response, pathArgs) {
+        return response.serveFolders(
+          [
+            FolderHost(path: './bin/website', alias: 'website'),
+          ],
+          pathArgs['path'],
+          allowServingFoldersContent: true,
+          autoViewIndexTextFiles: true,
+          allowViewingEntityPath: true,
+          viewTextBasedFiles: true,
+        );
+      },
     );
-  ServerHolder serverHolder = ServerHolder(router);
+
+  ServerHolder serverHolder = ServerHolder(router)
+    ..addGlobalMiddleware(logRequest);
   await serverHolder.bind(InternetAddress.anyIPv4, 3000);
 }
