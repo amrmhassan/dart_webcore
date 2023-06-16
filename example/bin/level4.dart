@@ -29,6 +29,10 @@ void main(List<String> arguments) async {
       },
     )
     ..get(
+        '/downloadImage',
+        (request, response, pathArgs) =>
+            response.writeFile('./bin/website/images/img.jpg'))
+    ..get(
       // this will do the same as the previous handler with just changing the path from '/prefix/*<path>' to '*<path>'
       '/*<path>',
       // in your html files paths make sure you are requesting the right path from the server

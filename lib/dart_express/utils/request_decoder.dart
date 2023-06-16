@@ -21,7 +21,7 @@ class RequestDecoder {
     if (contentType != null && contentType.charset != null) {
       final decoder = Encoding.getByName(contentType.charset!);
       if (decoder != null) {
-        var decodedBody = await decoder.decode(await readAsBytes(request));
+        var decodedBody = decoder.decode(await readAsBytes(request));
         return decodedBody;
       }
     }
