@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:mime/mime.dart';
 // import 'package:path/path.dart' as path;
@@ -74,17 +73,20 @@ class ResponseUtils {
         ..contentType = ContentType.parse(mime ?? 'audio/mpeg')
         ..add('Accept-Ranges', 'bytes')
         ..add('Content-Range', 'bytes $start-$end/$length')
-        ..contentLength = end - start + 1;
+        ..contentLength = end - start;
 
       var raf = file.openSync();
       await raf.setPosition(start);
-      var chunkSize = 64 * 1024; // 64KB, you can adjust this as needed
-      var bytesLeft = end - start + 1;
-      while (bytesLeft > 0) {
-        var chunk = await raf.read(min(chunkSize, bytesLeft));
-        req.response.add(chunk);
-        bytesLeft -= chunk.length;
-      }
+      await file.openRead(start, end).pipe(req.response);
+      // Stream.fromIterable(raf.readSync(count));
+
+      // var chunkSize = 64 * 1024 * 1024; // 64KB, you can adjust this as needed
+      // var bytesLeft = end - start + 1;
+      // while (bytesLeft > 0) {
+      //   var chunk = await raf.read(min(chunkSize, bytesLeft));
+      //   req.response.add(chunk);
+      //   bytesLeft -= chunk.length;
+      // }
 
       await raf.close();
     } else {
@@ -148,16 +150,16 @@ class ResponseUtils {
   //   return filePathCompleter.future;
   // }
 
-  Future sendFileToView(HttpRequest req, String filePath) async {
-    File file = File(filePath);
-    // check if file exists
-    if (!file.existsSync()) {
-      throw Exception('File $filePath doesn\'t exist');
-    }
+  // Future sendFileToView(HttpRequest req, String filePath) async {
+  //   File file = File(filePath);
+  //   // check if file exists
+  //   if (!file.existsSync()) {
+  //     throw Exception('File $filePath doesn\'t exist');
+  //   }
 
-    var mimeType = lookupMimeType(filePath).toString();
-    req.response.headers.contentType = ContentType.parse(mimeType);
-    await file.openRead().pipe(req.response);
-    await req.response.close();
-  }
+  //   var mimeType = lookupMimeType(filePath).toString();
+  //   req.response.headers.contentType = ContentType.parse(mimeType);
+  //   await file.openRead().pipe(req.response);
+  //   await req.response.close();
+  // }
 }

@@ -19,6 +19,7 @@ void main(List<String> arguments) async {
         return response.serveFolders(
           [
             FolderHost(path: './bin/website', alias: 'website'),
+            FolderHost(path: 'e:/', alias: 'video'),
           ],
           pathArgs['path'],
           allowServingFoldersContent: true,

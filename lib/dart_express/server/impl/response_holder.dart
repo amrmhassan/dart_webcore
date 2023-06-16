@@ -145,14 +145,14 @@ class ResponseHolder extends PassedHttpEntity {
         autoViewNames: autoViewIndexFilesNames,
       );
     } else if (result is FileResult) {
-      String? mimeType = lookupMimeType(result.result());
+      // String? mimeType = lookupMimeType(result.result());
 
-      bool textBased = mimeType != null && mimeType.startsWith('text');
-      if (viewTextBasedFiles && textBased) {
-        return streamMedia(result.result());
-      } else {
-        return writeFile(result.result());
-      }
+      // bool textBased = mimeType != null && mimeType.startsWith('text');
+      return streamMedia(result.result());
+      // if (viewTextBasedFiles && textBased) {
+      // } else {
+      //   return writeFile(result.result());
+      // }
     }
 
     write(
