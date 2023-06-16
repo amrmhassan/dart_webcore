@@ -111,6 +111,27 @@ with dart_express you can host a full folder with all of it's content either thi
 you just need to set an alias for that folder path in order to protect your system path to make it hidden from API consumers.
 for example
 ```dart
+  Router router = Router()
+    ..get(
+  /* it's alway better to make the files path template like this to be in the end of    
+      the pipeline because it will accept all requested paths and the pathArgs 
+      will take the path as the argument {'path':'all the path will be here'}
+  */
+
+      '/*<path>',
+      (request, response, pathArgs) {
+        return response.serveFolders(
+          [
+            FolderHost(path: './bin/website', alias: 'website'),
+          ],
+          pathArgs['path'],
+          allowServingFoldersContent: true,
+          autoViewIndexTextFiles: true,
+          allowViewingEntityPath: true,
+          viewTextBasedFiles: true,
+        );
+      },
+    );
 
 ```
 
