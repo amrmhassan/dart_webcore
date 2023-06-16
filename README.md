@@ -1,4 +1,7 @@
-# The final solution to HttpServers with dart  
+# The final solution to HttpServers with dart 
+
+<img src="https://github.com/amrmhassan/dart_express/blob/master/assets/logo.png?raw=true" alt="Image description" style="width: 400px; height: auto;
+  border-radius: 10px;">
 
 `dart_express` handles (Advanced Routing, HttpServers, websites hosting, static files hosting and much more...)
 
