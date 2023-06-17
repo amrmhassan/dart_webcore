@@ -13,6 +13,8 @@
 1. Pre programmed code for some utils like(Html response, json response)
 
 ## Tutorial  
+<img src="https://github.com/amrmhassan/dart_webcore/blob/master/assets/flowchart.png?raw=true" alt="Image description" style="width: 600px; height: auto;
+  border-radius: 10px;">
 
 ### - Routing ( Request Processors )
 `dart_webcore` consist of different layers which are a type of `RequestProcessor` which mean they can handle incoming requests.
