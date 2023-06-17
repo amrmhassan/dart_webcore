@@ -3,7 +3,8 @@
 <img src="https://github.com/amrmhassan/dart_webcore/blob/master/assets/logo.png?raw=true" alt="Image description" style="width: 400px; height: auto;
   border-radius: 10px;">
 
-`dart_webcore` handles (Advanced Routing, HttpServers, websites hosting, static files hosting and much more...)
+`dart_webcore` handles (Advanced Routing, HttpServers, websites hosting, static files hosting and much more...).  
+`Most Important is personalized middlewares. where you can set middlewares for a single handler, router or even a whole pipeline`
 
 ## Features
 
@@ -108,6 +109,21 @@ Handler pathArgHandler = Handler(
           'you request the file with the path ${pathArgs['file_path']}'));
 
 ```
+
+2. method: is the method for this handler or middleware(get, post, put...)  
+for handler you can specify a HttpMethods.all to run this middleware with all methods for a specific pathTemplate,  
+it is always preferable to run these kind of handlers(with HttpMethods.all) at the last of a pipeline.  
+for middleware you can specify the pathTemplate to be null to run this middleware with all paths, and you can also set the method for a middleware to be HttpMethods.all to be a global middleware for a specific request processor like a router or a pipeline.
+
+3. Processor: is the actual code for the middleware or a handler,  
+it will be on the form of 
+```  
+(RequestHolder, ResponseHolder, Map<String, dynamic>){
+    return PassedHttpEntity(either a RequestHolder or ResponseHolder)
+  }  
+  ```
+if the return type is ResponseHolder this means that the response is send and the pipeline is closed,  
+otherwise if the return type is RequestHolder this means that it will continue and the response not closed yet and it will pass the returned request to the next entity in the pipeline. 
 
 ### - Website Hosting
 with dart_webcore you can host a full folder with all of it's content either this folder is a website folder or a normal static files folder.  
