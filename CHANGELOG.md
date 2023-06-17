@@ -6,3 +6,6 @@
 
 ## 0.0.2
 1. examples added
+
+## 0.0.3
+1. flowchart added
