@@ -71,18 +71,6 @@ class ResponseHolder extends PassedHttpEntity {
     return this;
   }
 
-  // Future<String> receiveFile(
-  //   /// the folder for saving the received file
-  //   String saveFolderPath, {
-  //   /// if null all file types are allowed
-  //   List<String>? allowedTypes,
-
-  //   /// if null there will be no size limit
-  //   int? maxAllowedSize,
-  // }) async {
-  //   return _responseUtils.receiveFile(request, saveFolderPath);
-  // }
-
   Future<ResponseHolder> addStream(Stream<List<int>> stream) async {
     await response.addStream(stream);
     return this;
@@ -222,5 +210,26 @@ class ResponseHolder extends PassedHttpEntity {
   bool _indexFileNamaMatches(String fileName, List<String> allowedNames) {
     return allowedNames
         .any((element) => element.toLowerCase() == fileName.toLowerCase());
+  }
+
+//? fast repliers
+  ResponseHolder success(Object? object) {
+    return write(object, code: 200);
+  }
+
+  ResponseHolder forbidden(Object? object) {
+    return write(object, code: HttpStatus.forbidden);
+  }
+
+  ResponseHolder unauthorized(Object? object) {
+    return write(object, code: HttpStatus.unauthorized);
+  }
+
+  ResponseHolder badRequest(Object? object) {
+    return write(object, code: HttpStatus.badRequest);
+  }
+
+  ResponseHolder notFound(Object? object) {
+    return write(object, code: HttpStatus.notFound);
   }
 }

@@ -1,0 +1,27 @@
+import 'dart:io';
+import 'package:dart_webcore/dart_webcore.dart';
+
+void main(List<String> args) {
+  Router router = Router()
+    ..post('/upload', (request, response, pathArgs) async {
+      var form = await request.readFormData(saveFolderPath: 'formFields');
+      var field = form.getField('image');
+      print(field?.value);
+
+      return response.success(field?.value);
+    })
+    ..get(
+      '/*<file_name>',
+      (request, response, pathArgs) => response.serveFolders(
+        [
+          FolderHost(
+            path: 'formFields',
+            alias: 'formFields',
+          ),
+        ],
+        pathArgs['file_name'],
+      ),
+    );
+  ServerHolder serverHolder = ServerHolder(router);
+  serverHolder.bind(InternetAddress.anyIPv4, 8000);
+}

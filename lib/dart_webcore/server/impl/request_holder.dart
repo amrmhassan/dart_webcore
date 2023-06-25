@@ -51,7 +51,7 @@ class RequestHolder extends PassedHttpEntity {
   Future<List<int>> readAsBytes() => _requestDecoder.readAsBytes(request);
 
   /// this will return the form data if the request body was form data
-  Future<List<FormResult>> readFormData({
+  Future<FormData> readFormData({
     /// if false, if the form contain a file it will throw an error
     bool? acceptFormFiles,
 

@@ -58,9 +58,9 @@ class FormReceiver {
     return completer.future;
   }
 
-  Future<List<FormResult>> receiveFormData() async {
+  Future<FormData> receiveFormData() async {
     final contentType = holder.headers.contentType;
-    List<FormResult> form = [];
+    List<FormField> fields = [];
 
     var transformer =
         MimeMultipartTransformer(contentType!.parameters['boundary']!);
@@ -73,25 +73,25 @@ class FormReceiver {
       if (contentType.startsWith('text')) {
         // this is a text
         var res = await utf8.decoder.bind(part).join();
-        FormResult result = FormResult(
+        FormField result = FormField(
           key: name ?? 'noKey',
           value: res,
           contentType: contentType,
         );
-        form.add(result);
+        fields.add(result);
       } else {
         // this should be a stream of a file
         var filePath = await _savePartToFile(broadCast, contentType);
-        FormResult result = FormResult(
+        FormField result = FormField(
           key: name ?? 'file',
           value: filePath,
           contentType: contentType,
         );
-        form.add(result);
+        fields.add(result);
       }
     }
 
-    return form;
+    return FormData(fields);
   }
 
   Future<File> receiveBinaryFile() async {
@@ -133,11 +133,11 @@ class FormReceiver {
     return _getFileNameFromContentDisposition(attachment);
   }
 
-  int? _getFileSize() {
-    int? size = int.tryParse(
-        holder.headers.value(HttpHeaders.contentLengthHeader).toString());
-    return size;
-  }
+  // int? _getFileSize() {
+  //   int? size = int.tryParse(
+  //       holder.headers.value(HttpHeaders.contentLengthHeader).toString());
+  //   return size;
+  // }
 
   String? _getFileNameFromContentDisposition(String? contentDisposition) {
     if (contentDisposition != null) {
@@ -162,14 +162,45 @@ class FormReceiver {
   }
 }
 
-class FormResult {
+class FormField {
   final String key;
   final dynamic value;
   final String contentType;
 
-  const FormResult({
+  const FormField({
     required this.key,
     required this.value,
     required this.contentType,
   });
+
+  @override
+  String toString() {
+    return '($contentType) $key: $value';
+  }
+}
+
+class FormData {
+  final List<FormField> fields;
+  const FormData(this.fields);
+
+  FormField? getField(String key) {
+    return fields.cast().firstWhere(
+          (element) => element.key == key,
+          orElse: () => null,
+        );
+  }
+
+  File? getFile(String key) {
+    String? filePath = fields
+        .cast()
+        .firstWhere(
+          (element) => element.key == key,
+          orElse: () => null,
+        )
+        .value;
+    if (filePath == null) {
+      return null;
+    }
+    return File(filePath);
+  }
 }

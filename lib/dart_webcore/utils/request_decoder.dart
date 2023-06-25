@@ -48,7 +48,7 @@ class RequestDecoder {
     return completer.future;
   }
 
-  Future<List<FormResult>> readFormData(
+  Future<FormData> readFormData(
     RequestHolder request, {
     required bool? acceptFormFiles,
     required String? saveFolderPath,
