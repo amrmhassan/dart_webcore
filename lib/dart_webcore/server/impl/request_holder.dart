@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../../utils/form_receiver.dart';
 import '../../utils/request_decoder.dart';
 import '../repo/passed_http_entity.dart';
 import 'response_holder.dart';
@@ -48,4 +49,28 @@ class RequestHolder extends PassedHttpEntity {
   Future<dynamic> readAsJson() => _requestDecoder.readAsJson(request);
   Future<String> readAsString() => _requestDecoder.readAsString(request);
   Future<List<int>> readAsBytes() => _requestDecoder.readAsBytes(request);
+
+  /// this will return the form data if the request body was form data
+  Future<List<FormResult>> readFormData({
+    /// if false, if the form contain a file it will throw an error
+    bool? acceptFormFiles,
+
+    /// the path to save form files to <br>
+    /// this should be temporary and do checks on files after
+    String? saveFolderPath,
+  }) =>
+      _requestDecoder.readFormData(
+        this,
+        acceptFormFiles: acceptFormFiles,
+        saveFolderPath: saveFolderPath,
+      );
+
+  /// saving the request to a file if the request was a file
+  Future<File> receiveFile(
+    String? saveFolderPath,
+  ) =>
+      _requestDecoder.receiveFile(
+        this,
+        saveFolderPath,
+      );
 }

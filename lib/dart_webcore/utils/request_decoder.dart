@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_webcore/dart_webcore/server/impl/request_holder.dart';
+import 'package:dart_webcore/dart_webcore/utils/form_receiver.dart';
+
 //! add the ability to read form data as key value pairs
 
 class RequestDecoder {
@@ -43,5 +46,29 @@ class RequestDecoder {
     );
 
     return completer.future;
+  }
+
+  Future<List<FormResult>> readFormData(
+    RequestHolder request, {
+    required bool? acceptFormFiles,
+    required String? saveFolderPath,
+  }) async {
+    FormReceiver formReceiver = FormReceiver(
+      request,
+      acceptFormFiles: acceptFormFiles,
+      saveFolderPath: saveFolderPath,
+    );
+    return formReceiver.receiveFormData();
+  }
+
+  Future<File> receiveFile(
+    RequestHolder requestHolder,
+    String? saveFolderPath,
+  ) {
+    FormReceiver formReceiver = FormReceiver(
+      requestHolder,
+      saveFolderPath: saveFolderPath,
+    );
+    return formReceiver.receiveBinaryFile();
   }
 }
