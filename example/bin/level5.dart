@@ -5,6 +5,12 @@ void main(List<String> args) {
   Router router = Router()
     ..post('/upload', (request, response, pathArgs) async {
       var form = await request.readFormData(saveFolderPath: 'formFields');
+      // form should be on the format
+      /*
+      image: image_path
+      you can add any other fields as you want 
+      
+       */
       var field = form.getField('image');
       print(field?.value);
 
