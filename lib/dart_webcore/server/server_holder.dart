@@ -129,4 +129,6 @@ class ServerHolder {
   RequestProcessor get requestProcessor {
     return _requestProcessor;
   }
+
+  void generateDoc() {}
 }

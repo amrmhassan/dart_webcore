@@ -35,12 +35,10 @@ void main(List<String> arguments) async {
             'This message is passed from the pipeline middleware';
         return request;
       })
-      .addRawProcessor(authRouter)
+      .addRawRouter(authRouter)
       .addRouter(messagesRouter);
 
-  Pipeline app2Pipeline = Pipeline().addHandler('/app2', HttpMethods.geT,
-      (request, response, pathArgs) => response.write('you are in app 2 now'));
-  Cascade cascade = Cascade().add(appPipeline).add(app2Pipeline);
+  Cascade cascade = Cascade().add(appPipeline);
 
   ServerHolder serverHolder = ServerHolder(
     cascade,

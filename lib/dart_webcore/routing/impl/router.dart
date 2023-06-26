@@ -1,6 +1,7 @@
 import 'package:dart_webcore/dart_webcore/documentation/entity_doc.dart';
 import 'package:dart_webcore/dart_webcore/documentation/router_doc.dart';
 import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
+import 'package:dart_webcore/dart_webcore/routing/repo/pipeline_child.dart';
 
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
@@ -10,7 +11,7 @@ import 'handler.dart';
 import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
-class Router implements RequestProcessor, ParentProcessor {
+class Router implements RequestProcessor, ParentProcessor, PipelineChild {
   RouterDoc? doc;
 
   Router({

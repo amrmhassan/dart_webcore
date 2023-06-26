@@ -1,58 +1,29 @@
+import 'package:dart_webcore/dart_webcore/documentation/router_doc.dart';
 import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
+import 'package:dart_webcore/dart_webcore/routing/repo/pipeline_child.dart';
 
+import '../../documentation/entity_doc.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';
 import '../repo/routing_entity.dart';
-import 'handler.dart';
 import 'middleware.dart';
 import 'router.dart';
 
 class Pipeline implements RequestProcessor, ParentProcessor {
-  final List<RequestProcessor> _requestProcessors = [];
-  final List<Middleware> _upperMiddlewares = [];
-
-  List<RequestProcessor> get requestProcessors =>
-      [..._upperMiddlewares, ..._requestProcessors];
+  // can be router or middleware
+  final List<PipelineChild> _requestProcessors = [];
 
   /// you can add any request processor, (handler, middleware, router or even another pipeline) but it's not recommended to add nested pipelines
   /// just use Cascade to gather pipelines together
-  Pipeline addRawProcessor(RequestProcessor requestProcessor) {
+  Pipeline addRawRouter(Router requestProcessor) {
     _requestProcessors.add(requestProcessor);
     return this;
   }
 
-  Pipeline addUpperRawMiddleware(Middleware middleware) {
-    _upperMiddlewares.add(middleware);
+  Pipeline addRawMiddleware(Middleware middleware) {
+    _requestProcessors.add(middleware);
     return this;
-  }
-
-  Pipeline addUpperMiddleware(
-    String? pathTemplate,
-    HttpMethod method,
-    Processor processor, {
-    String? signature,
-  }) {
-    Middleware middleware = Middleware(
-      pathTemplate,
-      method,
-      processor,
-      signature: signature,
-    );
-    return addUpperRawMiddleware(middleware);
-  }
-
-  Pipeline addPipelineMiddleware(
-    Processor processor, {
-    String? signature,
-  }) {
-    Middleware middleware = Middleware(
-      null,
-      HttpMethods.all,
-      processor,
-      signature: signature,
-    );
-    return addRawProcessor(middleware);
   }
 
   Pipeline addMiddleware(
@@ -67,43 +38,19 @@ class Pipeline implements RequestProcessor, ParentProcessor {
       processor,
       signature: signature,
     );
-    return addRawProcessor(middleware);
-  }
-
-  Pipeline addHandler(
-    String pathTemplate,
-    HttpMethod method,
-    Processor processor, {
-    List<Middleware> middlewares = const [],
-    String? signature,
-  }) {
-    Handler handler = Handler(
-      pathTemplate,
-      method,
-      processor,
-      middlewares: middlewares,
-      signature: signature,
-    );
-    return addRawProcessor(handler);
+    return addRawMiddleware(middleware);
   }
 
   Pipeline addRouter(Router router) {
-    return addRawProcessor(router);
+    return addRawRouter(router);
   }
 
   @override
   List<RoutingEntity> processors(String path, HttpMethod method) {
     List<RoutingEntity> prs = [];
     bool doHaveHandler = false;
-    for (var requestProcessor in requestProcessors) {
-      if (requestProcessor is Handler) {
-        if (requestProcessor.isMyPath(path, method)) {
-          doHaveHandler = true;
-          // here i will just break because i met my handler after adding processor to the list
-          prs.addAll(requestProcessor.processors(path, method));
-          break;
-        }
-      } else if (requestProcessor is Middleware) {
+    for (var requestProcessor in _requestProcessors) {
+      if (requestProcessor is Middleware) {
         if (requestProcessor.isMyPath(path, method)) {
           // here i will just add it to the prs list
           prs.addAll(requestProcessor.processors(path, method));
@@ -126,4 +73,44 @@ class Pipeline implements RequestProcessor, ParentProcessor {
 
   @override
   RequestProcessor get self => this;
+  List<Router> get routers => _requestProcessors.whereType<Router>().toList();
+  late List<RouterDoc> docs;
+
+  void setDoc() {
+    var copy = routers;
+    for (var handler in copy) {
+      handler.setDoc();
+      var routingEntities = processors(handler.pathTemplate, handler.method);
+      var middlewares = routingEntities.whereType<Middleware>().toList();
+      var body = _parseBody(middlewares);
+      var headers = _parseHeaders(middlewares);
+      handler.doc?.insertBody(body);
+      handler.doc?.insertHeader(headers);
+    }
+    RouterDoc routerDoc = RouterDoc(doc?.name, doc?.description);
+    routerDoc.setHandlersDoc(copy.map((e) => e.doc).toList());
+    doc = routerDoc;
+  }
+
+  List<BodyField> _parseBody(List<Middleware> middlewares) {
+    List<BodyField> body = [];
+
+    for (var middleware in middlewares) {
+      if (middleware.doc?.body != null) {
+        body.addAll(middleware.doc!.body!);
+      }
+    }
+    return body;
+  }
+
+  List<HeaderField> _parseHeaders(List<Middleware> middlewares) {
+    List<HeaderField> header = [];
+
+    for (var middleware in middlewares) {
+      if (middleware.doc?.headers != null) {
+        header.addAll(middleware.doc!.headers!);
+      }
+    }
+    return header;
+  }
 }

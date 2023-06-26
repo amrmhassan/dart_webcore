@@ -37,9 +37,4 @@ void main(List<String> args) async {
 
   ServerHolder serverHolder = ServerHolder(router);
   await serverHolder.bind(InternetAddress.anyIPv4, 3000);
-  var docs = DocGenerator(serverHolder.requestProcessor);
-  router.setDoc();
-  var doc = router.doc;
-  print(doc);
-  docs.generate();
 }
