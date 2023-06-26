@@ -1,4 +1,5 @@
-import 'package:dart_webcore/dart_webcore/documentation/parent_doc.dart';
+import 'package:dart_webcore/dart_webcore/documentation/entity_doc.dart';
+import 'package:dart_webcore/dart_webcore/documentation/router_doc.dart';
 import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
 
 import '../repo/http_method.dart';
@@ -10,8 +11,7 @@ import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
 class Router implements RequestProcessor, ParentProcessor {
-  @override
-  ParentDoc? doc;
+  RouterDoc? doc;
 
   Router({
     this.doc,
@@ -20,6 +20,9 @@ class Router implements RequestProcessor, ParentProcessor {
   final List<RoutingEntity> _routingEntities = [];
   final List<Middleware> _upperMiddlewares = [];
   int _handlersNumber = 0;
+
+  List<RoutingEntity> get entities =>
+      [..._upperMiddlewares, ..._routingEntities];
 
   //? adding middlewares
   /// routerMiddleware will work on it's following handlers in this router only
@@ -30,12 +33,14 @@ class Router implements RequestProcessor, ParentProcessor {
   Router addRouterMiddleware(
     Processor processor, {
     String? signature,
+    MiddlewareDoc? docs,
   }) {
     return insertMiddleware(
       null,
       HttpMethods.all,
       processor,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -53,12 +58,14 @@ class Router implements RequestProcessor, ParentProcessor {
     HttpMethod method,
     Processor processor, {
     String? signature,
+    MiddlewareDoc? docs,
   }) {
     Middleware middleware = Middleware(
       pathTemplate,
       method,
       processor,
       signature: signature,
+      doc: docs,
     );
     return addUpperRawMiddleware(middleware);
   }
@@ -72,12 +79,14 @@ class Router implements RequestProcessor, ParentProcessor {
     HttpMethod method,
     Processor processor, {
     String? signature,
+    MiddlewareDoc? docs,
   }) {
     Middleware middleware = Middleware(
       pathTemplate,
       method,
       processor,
       signature: signature,
+      doc: docs,
     );
     return addRawMiddleware(middleware);
   }
@@ -97,8 +106,8 @@ class Router implements RequestProcessor, ParentProcessor {
     // this is to check if at least one handler is satisfied or not
     // if not then this router isn't the right router so i won't return anything from here at all
     bool doHaveHandler = false;
-    _routingEntities.insertAll(0, _upperMiddlewares);
-    for (var entity in _routingEntities) {
+
+    for (var entity in entities) {
       bool myPath = entity.isMyPath(path, method);
       if (!myPath) continue;
 
@@ -133,6 +142,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     List<Middleware> middlewares = const [],
     String? signature,
+    HandlerDoc? docs,
   }) {
     var handler = Handler(
       pathTemplate,
@@ -140,6 +150,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      doc: docs,
     );
     return addRawHandler(handler);
   }
@@ -150,6 +161,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -157,6 +169,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       signature: signature,
       middlewares: middlewares,
+      docs: docs,
     );
   }
 
@@ -165,6 +178,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -172,6 +186,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -180,6 +195,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -187,6 +203,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -195,6 +212,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -202,6 +220,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -210,6 +229,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -217,6 +237,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -225,6 +246,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -232,6 +254,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -240,6 +263,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -247,6 +271,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -255,6 +280,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -262,6 +288,7 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
   }
 
@@ -270,6 +297,7 @@ class Router implements RequestProcessor, ParentProcessor {
     Processor processor, {
     String? signature,
     List<Middleware> middlewares = const [],
+    HandlerDoc? docs,
   }) {
     return addHandler(
       pathTemplate,
@@ -277,6 +305,49 @@ class Router implements RequestProcessor, ParentProcessor {
       processor,
       middlewares: middlewares,
       signature: signature,
+      docs: docs,
     );
+  }
+
+  @override
+  RequestProcessor get self => this;
+
+  void setDoc() {
+    var copy = handlers;
+    for (var handler in copy) {
+      handler.setDoc();
+      var routingEntities = processors(handler.pathTemplate, handler.method);
+      var middlewares = routingEntities.whereType<Middleware>().toList();
+      var body = _parseBody(middlewares);
+      var headers = _parseHeaders(middlewares);
+      handler.doc?.insertBody(body);
+      handler.doc?.insertHeader(headers);
+    }
+    RouterDoc routerDoc = RouterDoc(doc?.name, doc?.description);
+    routerDoc.setHandlersDoc(copy.map((e) => e.doc).toList());
+    doc = routerDoc;
+  }
+
+  List<Handler> get handlers => _routingEntities.whereType<Handler>().toList();
+  List<BodyField> _parseBody(List<Middleware> middlewares) {
+    List<BodyField> body = [];
+
+    for (var middleware in middlewares) {
+      if (middleware.doc?.body != null) {
+        body.addAll(middleware.doc!.body!);
+      }
+    }
+    return body;
+  }
+
+  List<HeaderField> _parseHeaders(List<Middleware> middlewares) {
+    List<HeaderField> header = [];
+
+    for (var middleware in middlewares) {
+      if (middleware.doc?.headers != null) {
+        header.addAll(middleware.doc!.headers!);
+      }
+    }
+    return header;
   }
 }

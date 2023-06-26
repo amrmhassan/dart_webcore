@@ -1,6 +1,5 @@
 import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
 
-import '../../documentation/parent_doc.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';
@@ -10,25 +9,21 @@ import 'middleware.dart';
 import 'router.dart';
 
 class Pipeline implements RequestProcessor, ParentProcessor {
-  @override
-  ParentDoc? doc;
+  final List<RequestProcessor> _requestProcessors = [];
+  final List<Middleware> _upperMiddlewares = [];
 
-  Pipeline({
-    this.doc,
-  });
-
-  final List<RequestProcessor> requestProcessors = [];
-  List<Middleware> upperMiddlewares = [];
+  List<RequestProcessor> get requestProcessors =>
+      [..._upperMiddlewares, ..._requestProcessors];
 
   /// you can add any request processor, (handler, middleware, router or even another pipeline) but it's not recommended to add nested pipelines
   /// just use Cascade to gather pipelines together
   Pipeline addRawProcessor(RequestProcessor requestProcessor) {
-    requestProcessors.add(requestProcessor);
+    _requestProcessors.add(requestProcessor);
     return this;
   }
 
   Pipeline addUpperRawMiddleware(Middleware middleware) {
-    upperMiddlewares.add(middleware);
+    _upperMiddlewares.add(middleware);
     return this;
   }
 
@@ -98,7 +93,6 @@ class Pipeline implements RequestProcessor, ParentProcessor {
 
   @override
   List<RoutingEntity> processors(String path, HttpMethod method) {
-    requestProcessors.insertAll(0, upperMiddlewares);
     List<RoutingEntity> prs = [];
     bool doHaveHandler = false;
     for (var requestProcessor in requestProcessors) {
@@ -129,4 +123,7 @@ class Pipeline implements RequestProcessor, ParentProcessor {
     if (!doHaveHandler) return [];
     return prs;
   }
+
+  @override
+  RequestProcessor get self => this;
 }

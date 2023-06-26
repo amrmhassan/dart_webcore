@@ -1,15 +1,48 @@
-class EntityDoc {
+import 'package:dart_webcore/dart_webcore/routing/repo/http_method.dart';
+
+class HandlerDoc {
   // in the documentation i need the path-method-body-headers
   final List<HeaderField>? headers;
   final List<BodyField>? body;
   final String? description;
   final String? name;
 
-  const EntityDoc({
+  HandlerDoc({
     this.name,
     this.description,
     this.headers,
     this.body,
+  });
+
+  late String _path;
+  late HttpMethod _method;
+
+  void setPath(String path) {
+    _path = path;
+  }
+
+  void setMethod(HttpMethod method) {
+    _method = method;
+  }
+
+  void insertHeader(List<HeaderField> field) {
+    headers?.insertAll(0, field);
+  }
+
+  void insertBody(List<BodyField> field) {
+    body?.insertAll(0, field);
+  }
+
+  String get path => _path;
+  HttpMethod get method => _method;
+}
+
+class MiddlewareDoc {
+  final List<HeaderField>? headers;
+  final List<BodyField>? body;
+  const MiddlewareDoc({
+    this.body,
+    this.headers,
   });
 }
 

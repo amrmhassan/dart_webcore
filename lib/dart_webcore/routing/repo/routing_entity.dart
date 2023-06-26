@@ -1,4 +1,3 @@
-import 'package:dart_webcore/dart_webcore/documentation/entity_doc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../matchers/impl/path_checkers.dart';
@@ -19,14 +18,12 @@ class RoutingEntity {
   final Processor processor;
 
   String? _signature;
-  final EntityDoc? doc;
 
   RoutingEntity(
     this.pathTemplate,
     this.method,
     this.processor, {
     required String? signature,
-    this.doc,
   }) {
     // validating the signature
     if (signature != null) {

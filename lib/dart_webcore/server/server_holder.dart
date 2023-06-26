@@ -11,6 +11,8 @@ class ServerHolder {
   final List<HttpServer> _servers = [];
   final RequestProcessor _requestProcessor;
   final Function()? _onDone;
+  final bool serveDocs;
+  final String docsEndpoint;
 
   final Function()? _onError;
   final bool? _cancelOnError;
@@ -23,6 +25,8 @@ class ServerHolder {
     Function()? onDone,
     Function()? onError,
     Processor? onPathNotFound,
+    this.serveDocs = true,
+    this.docsEndpoint = '/docs',
   })  : _onPathNotFound = onPathNotFound,
         _onError = onError,
         _onDone = onDone,
@@ -86,10 +90,10 @@ class ServerHolder {
     return _handlerRequest(server);
   }
 
-  Future<HttpServer> listenOn(ServerSocket serverSocket) async {
-    var server = HttpServer.listenOn(serverSocket);
-    return _handlerRequest(server);
-  }
+  // Future<HttpServer> _listenOn(ServerSocket serverSocket) async {
+  //   var server = HttpServer.listenOn(serverSocket);
+  //   return _handlerRequest(server);
+  // }
 
   Future<void> closeAllRunningServers() async {
     for (var server in _servers) {
@@ -120,5 +124,9 @@ class ServerHolder {
   ServerHolder addGlobalRawMiddleWare(Middleware middleware) {
     _globalMiddlewares.add(middleware);
     return this;
+  }
+
+  RequestProcessor get requestProcessor {
+    return _requestProcessor;
   }
 }
