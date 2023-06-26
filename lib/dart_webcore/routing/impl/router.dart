@@ -1,3 +1,6 @@
+import 'package:dart_webcore/dart_webcore/documentation/parent_doc.dart';
+import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
+
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';
@@ -6,7 +9,14 @@ import 'handler.dart';
 import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
-class Router implements RequestProcessor {
+class Router implements RequestProcessor, ParentProcessor {
+  @override
+  ParentDoc? doc;
+
+  Router({
+    this.doc,
+  });
+
   final List<RoutingEntity> _routingEntities = [];
   final List<Middleware> _upperMiddlewares = [];
   int _handlersNumber = 0;

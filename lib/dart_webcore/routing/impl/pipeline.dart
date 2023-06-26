@@ -1,3 +1,6 @@
+import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
+
+import '../../documentation/parent_doc.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';
@@ -6,7 +9,14 @@ import 'handler.dart';
 import 'middleware.dart';
 import 'router.dart';
 
-class Pipeline implements RequestProcessor {
+class Pipeline implements RequestProcessor, ParentProcessor {
+  @override
+  ParentDoc? doc;
+
+  Pipeline({
+    this.doc,
+  });
+
   final List<RequestProcessor> requestProcessors = [];
   List<Middleware> upperMiddlewares = [];
 
