@@ -2,7 +2,6 @@ import 'package:dart_webcore/dart_webcore/documentation/router_doc.dart';
 import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
 import 'package:dart_webcore/dart_webcore/routing/repo/pipeline_child.dart';
 
-import '../../documentation/entity_doc.dart';
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
 import '../repo/request_processor.dart';
@@ -75,42 +74,4 @@ class Pipeline implements RequestProcessor, ParentProcessor {
   RequestProcessor get self => this;
   List<Router> get routers => _requestProcessors.whereType<Router>().toList();
   late List<RouterDoc> docs;
-
-  void setDoc() {
-    var copy = routers;
-    for (var handler in copy) {
-      handler.setDoc();
-      var routingEntities = processors(handler.pathTemplate, handler.method);
-      var middlewares = routingEntities.whereType<Middleware>().toList();
-      var body = _parseBody(middlewares);
-      var headers = _parseHeaders(middlewares);
-      handler.doc?.insertBody(body);
-      handler.doc?.insertHeader(headers);
-    }
-    RouterDoc routerDoc = RouterDoc(doc?.name, doc?.description);
-    routerDoc.setHandlersDoc(copy.map((e) => e.doc).toList());
-    doc = routerDoc;
-  }
-
-  List<BodyField> _parseBody(List<Middleware> middlewares) {
-    List<BodyField> body = [];
-
-    for (var middleware in middlewares) {
-      if (middleware.doc?.body != null) {
-        body.addAll(middleware.doc!.body!);
-      }
-    }
-    return body;
-  }
-
-  List<HeaderField> _parseHeaders(List<Middleware> middlewares) {
-    List<HeaderField> header = [];
-
-    for (var middleware in middlewares) {
-      if (middleware.doc?.headers != null) {
-        header.addAll(middleware.doc!.headers!);
-      }
-    }
-    return header;
-  }
 }
