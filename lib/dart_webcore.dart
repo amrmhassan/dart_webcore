@@ -15,4 +15,3 @@ export 'dart_webcore/server/server_holder.dart';
 export './dart_webcore/serving_folder/files_serving.dart';
 export './dart_webcore/routing/repo/http_method.dart';
 export './dart_webcore/utils/middlewares/logger_middleware.dart';
-export './dart_webcore/documentation/doc_generator.dart';

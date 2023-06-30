@@ -93,9 +93,11 @@ class FolderHost {
     required this.alias,
   }) {
     isFolderAliasValid(alias);
+    Directory directory = Directory(path);
 
-    if (!Directory(path).existsSync()) {
-      throw Exception('folder $path doesn\'t exist');
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+      // throw Exception('folder $path doesn\'t exist');
     }
     if (!path.endsWith('/')) {
       path = '$path/';

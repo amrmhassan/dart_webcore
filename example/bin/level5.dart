@@ -12,7 +12,6 @@ void main(List<String> args) {
       
        */
       var field = form.getField('image');
-      print(field?.value);
 
       return response.success(field?.value);
     })

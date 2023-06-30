@@ -5,7 +5,8 @@ class ResponseUtils {
   void sendChunkedFile(HttpRequest req, String filePath) {
     File file = File(filePath);
     if (!file.existsSync()) {
-      throw Exception('File $filePath doesn\'t exist');
+      file.createSync(recursive: true);
+      // throw Exception('File $filePath doesn\'t exist');
     }
 
     String fileName = file.path.split('/').last;
