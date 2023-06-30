@@ -12,3 +12,6 @@
 
 ## 0.1.0
 1. read forms done
+
+## 0.2.0
+1. cascade was removed and only left (handler, router, pipeline)
