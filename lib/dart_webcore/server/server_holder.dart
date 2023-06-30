@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dart_webcore/dart_webcore/documentation/doc_generator.dart';
+
 import '../constants/runtime_variables.dart';
 import '../routing/impl/middleware.dart';
 import '../routing/repo/http_method.dart';
@@ -130,5 +132,8 @@ class ServerHolder {
     return _requestProcessor;
   }
 
-  void generateDoc() {}
+  void generateDoc() {
+    DocGenerator docGenerator = DocGenerator(requestProcessor);
+    docGenerator.generate();
+  }
 }

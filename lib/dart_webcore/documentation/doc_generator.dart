@@ -1,16 +1,23 @@
-import '../routing/impl/handler.dart';
-import '../routing/impl/router.dart';
-import '../routing/repo/request_processor.dart';
+import 'package:dart_webcore/dart_webcore.dart';
+import 'package:dart_webcore/dart_webcore/routing/repo/request_executer.dart';
+import 'package:dart_webcore/dart_webcore/routing/repo/request_processor.dart';
 
 class DocGenerator {
-  final RequestProcessor _processor;
+  RequestProcessor requestExecuter;
+  DocGenerator(this.requestExecuter) {
+    if (requestExecuter is! RequestExecuter) {
+      throw Exception(
+          'requestProcessor in serverHolder must be a requestExecuter(pipeline, router or a handler)');
+    }
+  }
 
-  const DocGenerator(this._processor);
   void generate() {
-    var processor = _processor;
-    if (processor is Handler) {
-      print(processor.pathTemplate);
-      print(processor.method);
-    } else if (processor is Router) {}
+    if (requestExecuter is Pipeline) {
+      print('Pipeline');
+    } else if (requestExecuter is Router) {
+      print('Router');
+    } else if (requestExecuter is Handler) {
+      print('Handler');
+    }
   }
 }

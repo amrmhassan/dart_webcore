@@ -28,20 +28,11 @@ void main(List<String> arguments) async {
     ..get('/deleteMessage',
         (request, response, pathArgs) => response.write('message deleted'));
   // you can use either addRouter or addRequestProcessor to add a handler or another pipeline or even a router
-  Pipeline appPipeline = Pipeline()
-      .addMiddleware(null, HttpMethods.all, (request, response, pathArgs) {
-        // you can use this message from any other processor in the whole pipeline
-        request.context['message'] =
-            'This message is passed from the pipeline middleware';
-        return request;
-      })
-      .addRawRouter(authRouter)
-      .addRouter(messagesRouter);
-
-  Cascade cascade = Cascade().add(appPipeline);
+  Pipeline appPipeline =
+      Pipeline().addRouter(authRouter).addRouter(messagesRouter);
 
   ServerHolder serverHolder = ServerHolder(
-    cascade,
+    appPipeline,
     onPathNotFound: (request, response, pathArgs) {
       return response.writeHtml('path not found 404');
     },

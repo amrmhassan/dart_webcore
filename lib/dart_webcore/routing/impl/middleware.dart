@@ -1,5 +1,4 @@
 import 'package:dart_webcore/dart_webcore/documentation/entity_doc.dart';
-import 'package:dart_webcore/dart_webcore/routing/repo/pipeline_child.dart';
 
 import '../../matchers/impl/path_checkers.dart';
 import '../repo/http_method.dart';
@@ -11,8 +10,7 @@ import '../repo/routing_entity.dart';
 /// if the return is RequestHolder it will pass it to the next pipeline entity
 /// if the return is ResponseHolder it won't be passed to the next pipeline entity
 /// the pathTemplate for a middleware can be null, so it will be executed on all paths requested for a router
-class Middleware extends RoutingEntity
-    implements RequestProcessor, PipelineChild {
+class Middleware extends RoutingEntity implements RequestProcessor {
   Middleware(
     String? pathTemplate,
     HttpMethod method,

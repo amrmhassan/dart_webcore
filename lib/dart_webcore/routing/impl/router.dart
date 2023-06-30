@@ -1,7 +1,5 @@
 import 'package:dart_webcore/dart_webcore/documentation/entity_doc.dart';
 import 'package:dart_webcore/dart_webcore/documentation/router_doc.dart';
-import 'package:dart_webcore/dart_webcore/routing/repo/parent_processor.dart';
-import 'package:dart_webcore/dart_webcore/routing/repo/pipeline_child.dart';
 
 import '../repo/http_method.dart';
 import '../repo/processor.dart';
@@ -11,7 +9,7 @@ import 'handler.dart';
 import 'middleware.dart';
 
 /// this router will return only one matching handler, it holds some handlers and their middlewares
-class Router implements RequestProcessor, ParentProcessor, PipelineChild {
+class Router implements RequestProcessor {
   RouterDoc? doc;
 
   Router({
@@ -151,7 +149,7 @@ class Router implements RequestProcessor, ParentProcessor, PipelineChild {
       processor,
       middlewares: middlewares,
       signature: signature,
-      doc: docs,
+      docs: docs,
     );
     return addRawHandler(handler);
   }
@@ -321,8 +319,8 @@ class Router implements RequestProcessor, ParentProcessor, PipelineChild {
       var middlewares = routingEntities.whereType<Middleware>().toList();
       var body = _parseBody(middlewares);
       var headers = _parseHeaders(middlewares);
-      handler.doc?.insertBody(body);
-      handler.doc?.insertHeader(headers);
+      handler.doc.insertBody(body);
+      handler.doc.insertHeader(headers);
     }
     RouterDoc routerDoc = RouterDoc(doc?.name, doc?.description);
     routerDoc.setHandlersDoc(copy.map((e) => e.doc).toList());

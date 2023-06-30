@@ -22,7 +22,7 @@ class Handler extends RoutingEntity implements RequestProcessor {
   @override
   final String pathTemplate;
 
-  HandlerDoc? doc;
+  late HandlerDoc doc;
 
   Handler(
     this.pathTemplate,
@@ -30,7 +30,7 @@ class Handler extends RoutingEntity implements RequestProcessor {
     Processor processor, {
     List<Middleware> middlewares = const [],
     String? signature,
-    this.doc,
+    HandlerDoc? docs,
   }) : super(
           pathTemplate,
           method,
@@ -38,6 +38,7 @@ class Handler extends RoutingEntity implements RequestProcessor {
           signature: signature,
         ) {
     this.middlewares.addAll(middlewares);
+    doc = docs ?? HandlerDoc();
   }
 
   /// local middlewares will run only for this handler and won't have any effect on other handlers
@@ -83,8 +84,8 @@ class Handler extends RoutingEntity implements RequestProcessor {
     HandlerDoc entityDoc = HandlerDoc(
       body: body,
       headers: headers,
-      name: doc?.name,
-      description: doc?.description,
+      name: doc.name,
+      description: doc.description,
     );
 
     entityDoc.setMethod(method);
@@ -99,8 +100,8 @@ class Handler extends RoutingEntity implements RequestProcessor {
         headers.addAll(middleware.doc!.headers!);
       }
     }
-    if (doc?.headers != null) {
-      headers.addAll(doc!.headers!);
+    if (doc.headers != null) {
+      headers.addAll(doc.headers!);
     }
 
     return headers;
@@ -113,8 +114,8 @@ class Handler extends RoutingEntity implements RequestProcessor {
         body.addAll(middleware.doc!.body!);
       }
     }
-    if (doc?.body != null) {
-      body.addAll(doc!.body!);
+    if (doc.body != null) {
+      body.addAll(doc.body!);
     }
 
     return body;

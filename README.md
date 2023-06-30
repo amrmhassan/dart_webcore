@@ -54,21 +54,14 @@ you can also add middlewares to the router that will be executed only in this ro
 ```dart
   Pipeline pipeline = Pipeline().addRouter(router);
 ```
-
-1. Cascade: cascade is just a way of adding multiple pipelines to the server if you have different types of apps that running on the same server you can just gather them in a single cascade. 
-```dart
-  Cascade cascade = Cascade().add(pipeline);
-
-```
-
 ## - Server ( the actual server the receive requests )
 `ServerHolder` is a class that handles creating servers and closing them 
 it needs a request processor from above which will handle running the right handler and the right set of middlewares, 
 you can run multiple servers for the same server holder.
 
 ```dart
-// you can change 'cascade' with any other processor like pipeline, router or even a single handler
-  ServerHolder serverHolder = ServerHolder(cascade);
+// you can change 'pipeline' with any other processor like router, router or even a single handler
+  ServerHolder serverHolder = ServerHolder(pipeline);
   serverHolder.bind(InternetAddress.anyIPv4, 3000);
 ```
 
