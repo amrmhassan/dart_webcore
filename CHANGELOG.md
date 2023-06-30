@@ -15,3 +15,7 @@
 
 ## 0.2.0
 1. cascade was removed and only left (handler, router, pipeline)
+
+## 0.2.1 
+1. some bugs fixed
+1. package made available for dart apps
