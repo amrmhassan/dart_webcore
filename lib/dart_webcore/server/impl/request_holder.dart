@@ -70,11 +70,13 @@ class RequestHolder extends PassedHttpEntity {
     String? saveFolderPath, {
     bool throwErrorIfExist = false,
     bool overrideIfExist = false,
+    String? fileName,
   }) =>
       _requestDecoder.receiveFile(
         this,
         saveFolderPath,
         overrideIfExist: overrideIfExist,
         throwErrorIfExist: throwErrorIfExist,
+        fileName: fileName,
       );
 }

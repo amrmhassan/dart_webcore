@@ -98,11 +98,12 @@ class FormReceiver {
   Future<File> receiveBinaryFile({
     bool throwErrorIfExist = true,
     bool overrideIfExist = false,
+    String? fileName,
   }) async {
     var completer = Completer<File>();
     final contentType = holder.headers.contentType?.mimeType ?? '';
-    String? fileName = _getFileName();
-    if (fileName == null) {
+    String? fileNameToSave = fileName ?? _getFileName();
+    if (fileNameToSave == null) {
       List<String> parts = contentType.split('/');
       late String fileExtension;
       if (parts.length != 2) {
@@ -111,9 +112,9 @@ class FormReceiver {
         fileExtension = '.${parts[1]}';
       }
       String name = const Uuid().v4();
-      fileName = '$name$fileExtension';
+      fileNameToSave = '$name$fileExtension';
     }
-    String filePath = '${_saveFolderPath.strip('/')}/$fileName';
+    String filePath = '${_saveFolderPath.strip('/')}/$fileNameToSave';
 
     File file = File(filePath);
     if (file.existsSync() && throwErrorIfExist) {

@@ -66,6 +66,7 @@ class RequestDecoder {
     String? saveFolderPath, {
     bool throwErrorIfExist = false,
     bool overrideIfExist = false,
+    String? fileName,
   }) {
     FormReceiver formReceiver = FormReceiver(
       requestHolder,
@@ -74,6 +75,7 @@ class RequestDecoder {
     return formReceiver.receiveBinaryFile(
       overrideIfExist: overrideIfExist,
       throwErrorIfExist: throwErrorIfExist,
+      fileName: fileName,
     );
   }
 }
