@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_webcore/dart_webcore/exceptions/storage_exceptions.dart';
 import 'package:dart_webcore/dart_webcore/server/impl/request_holder.dart';
 import 'package:dart_webcore/dart_webcore/utils/string_utils.dart';
 import 'package:mime/mime.dart';
@@ -94,7 +95,10 @@ class FormReceiver {
     return FormData(fields);
   }
 
-  Future<File> receiveBinaryFile() async {
+  Future<File> receiveBinaryFile({
+    bool throwErrorIfExist = true,
+    bool overrideIfExist = false,
+  }) async {
     var completer = Completer<File>();
     final contentType = holder.headers.contentType?.mimeType ?? '';
     String? fileName = _getFileName();
@@ -112,8 +116,12 @@ class FormReceiver {
     String filePath = '${_saveFolderPath.strip('/')}/$fileName';
 
     File file = File(filePath);
-    if (file.existsSync()) {
-      throw Exception('file already exist');
+    if (file.existsSync() && throwErrorIfExist) {
+      throw FileExistsException();
+    } else if (file.existsSync() && !overrideIfExist) {
+      return file;
+    } else if (file.existsSync()) {
+      file.deleteSync();
     }
     file.createSync(recursive: true);
     var raf = await file.open(mode: FileMode.write);

@@ -63,12 +63,17 @@ class RequestDecoder {
 
   Future<File> receiveFile(
     RequestHolder requestHolder,
-    String? saveFolderPath,
-  ) {
+    String? saveFolderPath, {
+    bool throwErrorIfExist = false,
+    bool overrideIfExist = false,
+  }) {
     FormReceiver formReceiver = FormReceiver(
       requestHolder,
       saveFolderPath: saveFolderPath,
     );
-    return formReceiver.receiveBinaryFile();
+    return formReceiver.receiveBinaryFile(
+      overrideIfExist: overrideIfExist,
+      throwErrorIfExist: throwErrorIfExist,
+    );
   }
 }
