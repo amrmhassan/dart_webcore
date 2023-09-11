@@ -34,11 +34,17 @@ class ServerHolder {
         _onDone = onDone,
         _cancelOnError = cancelOnError;
 
-  HttpServer _handlerRequest(HttpServer server) {
+  HttpServer _handlerRequest(
+    HttpServer server, {
+    required String Function(String address, int port)? afterServerRunMessage,
+  }) {
     String address = server.address == InternetAddress.anyIPv4
         ? '127.0.0.1'
         : server.address.address;
-    dartExpressLogger.i('server listening on http://$address:${server.port}');
+    String message = afterServerRunMessage == null
+        ? 'server listening on http://$address:${server.port}'
+        : afterServerRunMessage(address, server.port);
+    dartExpressLogger.i(message);
     RequestHandler handler = RequestHandler(
       _requestProcessor,
       _globalMiddlewares,
@@ -60,6 +66,7 @@ class ServerHolder {
     int backlog = 0,
     bool v6Only = false,
     bool shared = false,
+    String Function(String address, int port)? afterServerMessage,
   }) async {
     var server = await HttpServer.bind(
       address,
@@ -68,7 +75,10 @@ class ServerHolder {
       v6Only: v6Only,
       shared: shared,
     );
-    return _handlerRequest(server);
+    return _handlerRequest(
+      server,
+      afterServerRunMessage: afterServerMessage,
+    );
   }
 
   Future<HttpServer> bindSecure(
@@ -79,6 +89,7 @@ class ServerHolder {
     bool v6Only = false,
     bool requestClientCertificate = false,
     bool shared = false,
+    String Function(String address, int port)? afterServerMessage,
   }) async {
     var server = await HttpServer.bindSecure(
       address,
@@ -89,7 +100,10 @@ class ServerHolder {
       requestClientCertificate: requestClientCertificate,
       shared: shared,
     );
-    return _handlerRequest(server);
+    return _handlerRequest(
+      server,
+      afterServerRunMessage: afterServerMessage,
+    );
   }
 
   // Future<HttpServer> _listenOn(ServerSocket serverSocket) async {

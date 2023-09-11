@@ -25,14 +25,33 @@ class RequestHandler {
   }) : _onPathNotFoundParam = onPathNotFound;
 
   void handler(HttpRequest request) async {
-    var responseHolder = await _getPassedEntity(request);
-    await responseHolder.close();
+    try {
+      var responseHolder = await _getPassedEntity(request);
+      await responseHolder.close();
+    } catch (e) {
+      await request.response
+        ..statusCode = HttpStatus.internalServerError
+        ..write('Error occurred')
+        ..close();
+    }
   }
 
   FutureOr<ResponseHolder> _getPassedEntity(HttpRequest request) async {
     ResponseHolder? finalResponseHolder;
     String path = request.uri.path;
     HttpMethod method = HttpMethod.fromString(request.method);
+    // if (method == HttpMethods.options) {
+    //   //
+    //   ResponseHolder responseHolder = ResponseHolder(request);
+    //   responseHolder.headers.add('Access-Control-Allow-Origin',
+    //       '*'); // Replace with your desired origin(s)
+    //   responseHolder.headers
+    //       .add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    //   responseHolder.headers
+    //       .add('Access-Control-Allow-Headers', 'Content-Type');
+    //   responseHolder.write('connected').close();
+    //   return responseHolder;
+    // }
     var matchedGlobalMiddlewares = _getMatchedGlobalMiddlewares(path, method);
     var processors = [
       ...matchedGlobalMiddlewares,
