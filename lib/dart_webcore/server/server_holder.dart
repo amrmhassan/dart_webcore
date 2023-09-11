@@ -36,14 +36,20 @@ class ServerHolder {
 
   HttpServer _handlerRequest(
     HttpServer server, {
-    required String Function(String address, int port)? afterServerRunMessage,
+    required String Function(
+      String protocol,
+      String address,
+      int port,
+    )? afterServerRunMessage,
+    required bool secured,
   }) {
     String address = server.address == InternetAddress.anyIPv4
         ? '127.0.0.1'
         : server.address.address;
+    String protocol = secured ? 'https' : 'http';
     String message = afterServerRunMessage == null
-        ? 'server listening on http://$address:${server.port}'
-        : afterServerRunMessage(address, server.port);
+        ? 'server listening on $protocol://$address:${server.port}'
+        : afterServerRunMessage(protocol, address, server.port);
     dartExpressLogger.i(message);
     RequestHandler handler = RequestHandler(
       _requestProcessor,
@@ -66,7 +72,11 @@ class ServerHolder {
     int backlog = 0,
     bool v6Only = false,
     bool shared = false,
-    String Function(String address, int port)? afterServerMessage,
+    String Function(
+      String protocol,
+      String address,
+      int port,
+    )? afterServerMessage,
   }) async {
     var server = await HttpServer.bind(
       address,
@@ -78,6 +88,7 @@ class ServerHolder {
     return _handlerRequest(
       server,
       afterServerRunMessage: afterServerMessage,
+      secured: false,
     );
   }
 
@@ -89,7 +100,11 @@ class ServerHolder {
     bool v6Only = false,
     bool requestClientCertificate = false,
     bool shared = false,
-    String Function(String address, int port)? afterServerMessage,
+    String Function(
+      String protocol,
+      String address,
+      int port,
+    )? afterServerMessage,
   }) async {
     var server = await HttpServer.bindSecure(
       address,
@@ -103,6 +118,7 @@ class ServerHolder {
     return _handlerRequest(
       server,
       afterServerRunMessage: afterServerMessage,
+      secured: true,
     );
   }
 
