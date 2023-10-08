@@ -19,3 +19,7 @@
 ## 0.2.1 
 1. some bugs fixed
 1. package made available for dart apps
+
+## 0.3.0
+1. cascades removed
+1. some other updates
