@@ -70,7 +70,7 @@ class FormReceiver {
       var broadCast = part.asBroadcastStream();
       final disposition = part.headers['content-disposition'];
       String? name = _getDispositionKey(disposition);
-      var contentType = part.headers['content-type'] ?? '';
+      var contentType = part.headers['content-type'] ?? 'text';
       if (contentType.startsWith('text')) {
         // this is a text
         var res = await utf8.decoder.bind(part).join();
