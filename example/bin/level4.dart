@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_webcore/dart_webcore.dart';
+import 'package:dart_webcore_new/dart_webcore_new.dart';
 
 // in this level you can host a whole static folder or a whole website
 void main(List<String> arguments) async {

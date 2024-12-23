@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_webcore/dart_webcore.dart';
+import 'package:dart_webcore_new/dart_webcore_new.dart';
 
 void main(List<String> arguments) async {
   // if the user asked for /getFile/website/file.txt

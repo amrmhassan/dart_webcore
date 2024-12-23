@@ -73,13 +73,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  dart_webcore:
+  dart_webcore_new:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.3.1"
   file:
     dependency: transitive
     description:

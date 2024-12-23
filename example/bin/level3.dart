@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_webcore/dart_webcore.dart';
+import 'package:dart_webcore_new/dart_webcore_new.dart';
 
 // Pipeline is used to gather multiple routes or handlers and you can add a global middleware for the whole pipeline
 // Cascade is used to gather multiple pipelines for some use cases which need this approach

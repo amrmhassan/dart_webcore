@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.19.6 <4.0.0'
 
 dependencies:
-  dart_webcore:
+  dart_webcore_new:
     path: ../../dart_webcore
 
 dev_dependencies:
