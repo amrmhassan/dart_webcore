@@ -1,6 +1,6 @@
 name: dart_webcore
 description: A new way for Dart into the web server world.
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/amrmhassan/dart_webcore
 
 environment:

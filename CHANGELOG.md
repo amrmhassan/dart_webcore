@@ -23,3 +23,6 @@
 ## 0.3.0
 1. cascades removed
 1. some other updates
+
+## 0.3.1
+1. text form field update
